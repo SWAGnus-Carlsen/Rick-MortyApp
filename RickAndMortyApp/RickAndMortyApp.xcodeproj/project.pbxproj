@@ -9,19 +9,21 @@
 /* Begin PBXBuildFile section */
 		12E0382E2BF69C670019401D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E0382D2BF69C670019401D /* AppDelegate.swift */; };
 		12E038302BF69C670019401D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E0382F2BF69C670019401D /* SceneDelegate.swift */; };
-		12E038322BF69C670019401D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E038312BF69C670019401D /* ViewController.swift */; };
+		12E038322BF69C670019401D /* SplashController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E038312BF69C670019401D /* SplashController.swift */; };
 		12E038372BF69C6B0019401D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12E038362BF69C6B0019401D /* Assets.xcassets */; };
 		12E0383A2BF69C6B0019401D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12E038382BF69C6B0019401D /* LaunchScreen.storyboard */; };
+		12EE3A7A2BF7BD4000CAD2EE /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A792BF7BD4000CAD2EE /* HomeController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		12E0382A2BF69C670019401D /* RickAndMortyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RickAndMortyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		12E0382D2BF69C670019401D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		12E0382F2BF69C670019401D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		12E038312BF69C670019401D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		12E038312BF69C670019401D /* SplashController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashController.swift; sourceTree = "<group>"; };
 		12E038362BF69C6B0019401D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		12E038392BF69C6B0019401D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		12E0383B2BF69C6B0019401D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		12EE3A792BF7BD4000CAD2EE /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +56,23 @@
 		12E0382C2BF69C670019401D /* RickAndMortyApp */ = {
 			isa = PBXGroup;
 			children = (
+				12EE3A7B2BF7C1B800CAD2EE /* LaunchAnimation */,
+				12EE3A792BF7BD4000CAD2EE /* HomeController.swift */,
+				12E038362BF69C6B0019401D /* Assets.xcassets */,
 				12E0382D2BF69C670019401D /* AppDelegate.swift */,
 				12E0382F2BF69C670019401D /* SceneDelegate.swift */,
-				12E038312BF69C670019401D /* ViewController.swift */,
-				12E038362BF69C6B0019401D /* Assets.xcassets */,
-				12E038382BF69C6B0019401D /* LaunchScreen.storyboard */,
 				12E0383B2BF69C6B0019401D /* Info.plist */,
 			);
 			path = RickAndMortyApp;
+			sourceTree = "<group>";
+		};
+		12EE3A7B2BF7C1B800CAD2EE /* LaunchAnimation */ = {
+			isa = PBXGroup;
+			children = (
+				12E038312BF69C670019401D /* SplashController.swift */,
+				12E038382BF69C6B0019401D /* LaunchScreen.storyboard */,
+			);
+			path = LaunchAnimation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -134,7 +145,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12E038322BF69C670019401D /* ViewController.swift in Sources */,
+				12EE3A7A2BF7BD4000CAD2EE /* HomeController.swift in Sources */,
+				12E038322BF69C670019401D /* SplashController.swift in Sources */,
 				12E0382E2BF69C670019401D /* AppDelegate.swift in Sources */,
 				12E038302BF69C670019401D /* SceneDelegate.swift in Sources */,
 			);
