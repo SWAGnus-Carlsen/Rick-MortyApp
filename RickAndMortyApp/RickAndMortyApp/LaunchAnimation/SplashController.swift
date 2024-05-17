@@ -13,6 +13,19 @@ final class SplashController: UIViewController {
     private lazy var portalImageView: UIImageView = makePortalImageView()
     private lazy var rickAndMortySign: UIImageView = makeRickAndMortySign()
     
+    //MARK: Properties
+    private var showMainFlow: () -> Void
+    
+    //MARK: Constructor
+    init(showMainFlow: @escaping () -> Void) {
+        self.showMainFlow = showMainFlow
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -68,10 +81,7 @@ private extension SplashController {
         
         self.portalImageView.rotate()
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            let vc = HomeController()
-            vc.modalTransitionStyle = .crossDissolve
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: true)
+            self.showMainFlow()
         }
     }
 }
