@@ -12,7 +12,7 @@ final class EpisodesTabCoordinator: Coordinator {
     var rootViewController: UINavigationController
     
     lazy var episodesController = {
-        let vc = HomeController()
+        let vc = EpisodesController()
         return vc
     }()
     

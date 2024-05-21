@@ -24,13 +24,13 @@ final class TabBarCoordinator: Coordinator {
         episodesTabCoordinator.start()
         childCoordinators.append(episodesTabCoordinator)
         let episodesController = episodesTabCoordinator.rootViewController
-        episodesController.tabBarItem = UITabBarItem(title: "", image: .add, selectedImage: .add)
+        episodesController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house") , selectedImage: UIImage(systemName: "house.fill"))
         
         let favoriteEpisodesCoordinator = FavoriteTabCoordinator()
         favoriteEpisodesCoordinator.start()
         childCoordinators.append(favoriteEpisodesCoordinator)
         let favoriteEpisodesController = favoriteEpisodesCoordinator.rootViewController
-        favoriteEpisodesController.tabBarItem = UITabBarItem(title: "",  image: .add, selectedImage: .add)
+        favoriteEpisodesController.tabBarItem = UITabBarItem(title: "",  image: UIImage(systemName: "heart"), selectedImage: UIImage(systemName: "heart.fill"))
         
         self.rootViewController.viewControllers = [episodesController, favoriteEpisodesController]
         
