@@ -12,6 +12,9 @@ final class EpisodesCVCell: UICollectionViewCell {
     //MARK: ID
     static let identifier = String(describing: EpisodesCVCell.self)
     
+    //MARK: Properties
+    private var isLiked: Bool = false
+    
     //MARK: UI
     private lazy var episodeImageView: UIImageView = {
         let imageView = UIImageView()
@@ -52,7 +55,7 @@ final class EpisodesCVCell: UICollectionViewCell {
     private lazy var likeButton: UIButton = {
         let b = UIButton()
         b.setImage(.like, for: .normal)
-        b.setImage(.tappedLike, for: .selected)
+        b.addTarget(self, action: #selector(didTapLike), for: .touchUpInside)
         return b
     }()
     
@@ -108,6 +111,13 @@ final class EpisodesCVCell: UICollectionViewCell {
         descriptionLabel.frame = CGRect(x: watchImageView.frame.maxX + 8, y: nameLabel.frame.maxY + 22, width: 157, height: 26)
         likeButton.frame = CGRect(x: contentView.frame.maxX - 56, y: nameLabel.frame.maxY + 22, width: 40, height: 40)
         
+    }
+    
+    //MARK: Action
+    @objc
+    private func didTapLike() {
+        isLiked.toggle()
+        likeButton.setImage(isLiked ? .tappedLike : .like, for: .normal)
     }
     
 }

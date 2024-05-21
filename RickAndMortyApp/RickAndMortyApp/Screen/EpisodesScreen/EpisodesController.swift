@@ -27,6 +27,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         Episode(image: .episodePlaceholder, name: "Rick Sanchez", id: "S01E01", description: "Pilot" ),
         Episode(image: .episodePlaceholder, name: "Rick Sanchez", id: "S01E01", description: "Pilot" )
     ]
+    private var results: [Result] = []
     
     //MARK: Lifecycle
     override func viewDidLoad() {
@@ -35,7 +36,22 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         setupEpisodesCollection()
         setupConstraints()
         
-        
+        URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=1")!)) { [weak self] data,_,error in
+            if error != nil {
+                print("Episodes fetch error")
+            }
+            
+            guard let data else { return }
+            do {
+                print(data.prettyPrintedJSONString)
+                let response = try JSONDecoder().decode(EpisodesResponse.self, from: data)
+                self?.results = response.results
+                
+            } catch {
+                print("Error occured while decoding episodes")
+            }
+            
+        }.resume()
     }
 }
 
