@@ -11,16 +11,18 @@ final class TabBarCoordinator: Coordinator {
     
     var rootViewController: UITabBarController
     var childCoordinators: [Coordinator] = []
+    var dependency: IDependency
     
-    init() {
+    init(dependency: IDependency) {
         self.rootViewController = UITabBarController()
         rootViewController.tabBar.isTranslucent = true
         rootViewController.tabBar.backgroundColor = .white
         rootViewController.navigationController?.isNavigationBarHidden = true
+        self.dependency = dependency
     }
     
     func start() {
-        let episodesTabCoordinator = EpisodesTabCoordinator()
+        let episodesTabCoordinator = EpisodesTabCoordinator(dependency: dependency)
         episodesTabCoordinator.start()
         childCoordinators.append(episodesTabCoordinator)
         let episodesController = episodesTabCoordinator.rootViewController

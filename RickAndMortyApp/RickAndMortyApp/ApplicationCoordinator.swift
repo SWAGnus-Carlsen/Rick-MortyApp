@@ -12,6 +12,7 @@ final class ApplicationCoordinator: Coordinator {
     private let window: UIWindow
     private var rootViewController = UIViewController()
     private var childCoordinators = [Coordinator]()
+    var dependency: IDependency = Dependency()
     
     init(window: UIWindow) {
         self.window = window
@@ -24,7 +25,7 @@ final class ApplicationCoordinator: Coordinator {
     }
     
     private func startTabBarCoordinator() {
-        let tabBarCoordinator = TabBarCoordinator()
+        let tabBarCoordinator = TabBarCoordinator(dependency: dependency)
         childCoordinators = [tabBarCoordinator]
         tabBarCoordinator.start()
         window.rootViewController = tabBarCoordinator.rootViewController

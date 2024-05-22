@@ -10,14 +10,16 @@ import UIKit
 final class EpisodesTabCoordinator: Coordinator {
     
     var rootViewController: UINavigationController
+    var dependency: IDependency
     
     lazy var episodesController = {
-        let vc = EpisodesController()
+        let vc = EpisodesAssembly.configure(dependency: dependency)
         return vc
     }()
     
-    init() {
+    init(dependency: IDependency) {
         rootViewController = UINavigationController()
+        self.dependency = dependency
     }
     
     func start() {

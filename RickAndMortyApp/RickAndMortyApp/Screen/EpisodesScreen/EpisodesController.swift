@@ -7,12 +7,6 @@
 
 import UIKit
 
-struct Episode {
-    let image: UIImage
-    let name: String
-    let id: String
-    let description: String
-}
 
 final class EpisodesController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -21,13 +15,31 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     private lazy var searchTF: UITextField = makeSearchTF()
     private var episodesCollection: UICollectionView?
     
+    //MARK: Services
+    private var networkService: INetworkService
+    
+    //MARK: ViewModel
+    private var viewModel: EpisodesViewModel
+    
     //MARK: Propeties
-    private var episodes: [Episode] = [
-        Episode(image: .episodePlaceholder, name: "Rick Sanchez", id: "S01E01", description: "Pilot" ),
-        Episode(image: .episodePlaceholder, name: "Rick Sanchez", id: "S01E01", description: "Pilot" ),
-        Episode(image: .episodePlaceholder, name: "Rick Sanchez", id: "S01E01", description: "Pilot" )
-    ]
-    private var results: [Result] = []
+    private var episodes: [Episode] = []{
+        didSet {
+            DispatchQueue.main.async { [weak self] in
+                self?.episodesCollection?.reloadData()
+            }
+        }
+    }
+    
+    //MARK: Constructor
+    init(dependency: IDependency, viewModel: EpisodesViewModel) {
+        self.networkService = dependency.networkService
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: Lifecycle
     override func viewDidLoad() {
@@ -35,23 +47,14 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         setupUI()
         setupEpisodesCollection()
         setupConstraints()
-        
-        URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=1")!)) { [weak self] data,_,error in
-            if error != nil {
-                print("Episodes fetch error")
+        networkService.getEpisodes { [weak self] result in
+            switch result {
+            case .success(let response):
+                self?.episodes = response.results
+            case .failure(let error):
+                print(error.errorDescription)
             }
-            
-            guard let data else { return }
-            do {
-                print(data.prettyPrintedJSONString)
-                let response = try JSONDecoder().decode(EpisodesResponse.self, from: data)
-                self?.results = response.results
-                
-            } catch {
-                print("Error occured while decoding episodes")
-            }
-            
-        }.resume()
+        }
     }
 }
 
@@ -172,5 +175,5 @@ extension EpisodesController {
 }
 
 #Preview("") {
-    EpisodesController()
+    EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel())
 }

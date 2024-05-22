@@ -10,7 +10,7 @@ import Foundation
 // MARK: - EpisodesResponse
 struct EpisodesResponse: Decodable {
     let info: Info
-    let results: [Result]
+    let results: [Episode]
 }
 
 // MARK: - Info
@@ -22,7 +22,7 @@ struct Info: Decodable {
 }
 
 // MARK: - Result
-struct Result: Decodable {
+struct Episode: Decodable {
     let id: Int
     let name: String
     let episode: String

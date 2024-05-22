@@ -49,6 +49,7 @@ final class EpisodesCVCell: UICollectionViewCell {
         l.textAlignment = .left
         l.text = ""
         l.numberOfLines = 0
+        l.adjustsFontSizeToFitWidth = true
         return l
     }()
     
@@ -93,10 +94,10 @@ final class EpisodesCVCell: UICollectionViewCell {
     
     //MARK: Setup methods
     func setupCell(with episode: Episode) {
-        episodeImageView.image = episode.image
+        //episodeImageView.image = episode.image
         nameLabel.text = episode.name
         
-        descriptionLabel.text = "\(episode.description) | \(episode.id)"
+        descriptionLabel.text = "\(episode.name) | \(episode.episode)"
     }
     
     //MARK: UI
