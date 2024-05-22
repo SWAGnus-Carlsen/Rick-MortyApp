@@ -16,7 +16,7 @@ final class EpisodesCVCell: UICollectionViewCell {
     private var isLiked: Bool = false
     
     //MARK: UI
-    private lazy var episodeImageView: UIImageView = {
+    lazy var episodeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
         imageView.clipsToBounds = true
@@ -88,16 +88,22 @@ final class EpisodesCVCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         episodeImageView.image = nil
-    
-        
+        #warning("Do smth with this")
+        likeButton.setImage(.like, for: .normal)
+        nameLabel.text = nil
+        descriptionLabel.text = nil
     }
     
     //MARK: Setup methods
-    func setupCell(with episode: Episode) {
-        //episodeImageView.image = episode.image
-        nameLabel.text = episode.name
+    func setupCell(with episode: Episode, and character: CharacterResponse,_ networkService: INetworkService) {
+        networkService.getImage(with: character.id, for: episodeImageView)
+        DispatchQueue.main.async {
+            self.nameLabel.text = character.name
+            self.descriptionLabel.text = "\(episode.name) | \(episode.episode)"
+        }
         
-        descriptionLabel.text = "\(episode.name) | \(episode.episode)"
+        
+        
     }
     
     //MARK: UI

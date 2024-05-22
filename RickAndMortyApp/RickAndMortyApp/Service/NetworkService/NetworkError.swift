@@ -9,13 +9,16 @@ import Foundation
 
 enum NetworkError: LocalizedError {
     case decodingError(Error)
-    case smthelse
+    case requestError(Error)
+    case emptyData
+    case imageFetchingError
     
     public var errorDescription: String {
         switch self {
-        case .decodingError(let error): return "Error occured while decoding episodes: \(error)"
-        case .smthelse:
-            return ""
+        case .decodingError(let error): return "Error occured while decoding : \(error)"
+        case .requestError(let error): return "Fetching error : \(error)"
+        case .imageFetchingError: return "Image fetching error"
+        case .emptyData: return "Request returned an empty data"
         }
     }
 }

@@ -29,6 +29,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
             }
         }
     }
+    private var imageURLs: [String] = []
     
     //MARK: Constructor
     init(dependency: IDependency, viewModel: EpisodesViewModel) {
@@ -158,14 +159,30 @@ extension EpisodesController {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: EpisodesCVCell.identifier,
-            for: indexPath) as? EpisodesCVCell
+            for: indexPath
+        ) as? EpisodesCVCell
         else {
             return UICollectionViewCell()
         }
         
-        cell.setupCell(with: episodes[indexPath.row])
-        
-        
+        let currentEpisode = episodes[indexPath.row]
+        var currentCharacter: CharacterResponse?
+        #warning("Optimize this one")
+        if imageURLs.count <= 19 {
+            imageURLs.append(currentEpisode.characters.randomElement() ?? "")
+        }
+        networkService.getCharacter(with: imageURLs[indexPath.row] ) { [weak self] result in
+            switch result {
+            case .success(let character):
+//                print("\(indexPath.row) : \(character)")
+                currentCharacter = character
+
+                cell.setupCell(with: currentEpisode, and: currentCharacter!, self!.networkService)
+            case .failure(_):
+                ()
+            }
+        }
+ 
         return cell
     }
     
