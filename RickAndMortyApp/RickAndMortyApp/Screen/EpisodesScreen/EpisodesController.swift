@@ -30,11 +30,17 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         }
     }
     private var imageURLs: [String] = []
+    private var shownCharacters: [CharacterResponse] = []
+    
+    
+    //MARK: Closures
+    private let didTapOnCharacter: (_ character: CharacterResponse) -> Void
     
     //MARK: Constructor
-    init(dependency: IDependency, viewModel: EpisodesViewModel) {
+    init(dependency: IDependency, viewModel: EpisodesViewModel, didTapOnCharacter: @escaping (_ character: CharacterResponse) -> Void ) {
         self.networkService = dependency.networkService
         self.viewModel = viewModel
+        self.didTapOnCharacter = didTapOnCharacter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -175,9 +181,8 @@ extension EpisodesController {
             switch result {
             case .success(let character):
 //                print("\(indexPath.row) : \(character)")
-                currentCharacter = character
-
-                cell.setupCell(with: currentEpisode, and: currentCharacter!, self!.networkService)
+                self?.shownCharacters.append(character)
+                cell.setupCell(with: currentEpisode, and: self!.shownCharacters[indexPath.row], self!.networkService)
             case .failure(_):
                 ()
             }
@@ -187,10 +192,14 @@ extension EpisodesController {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        collectionView.deselectItem(at: indexPath, animated: false)
+        didTapOnCharacter(shownCharacters[indexPath.row])
     }
 }
 
-#Preview("") {
-    EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel())
-}
+//#Preview("") {
+//    UINavigationController(rootViewController: EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel(), didTapOnCharacter: {character in
+//        UINavigationController().pushViewController(DetailAssembly.configure(character: character), animated: true)
+//    } ))
+//    
+//}

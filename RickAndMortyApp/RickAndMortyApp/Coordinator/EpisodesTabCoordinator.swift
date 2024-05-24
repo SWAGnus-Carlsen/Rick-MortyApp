@@ -13,7 +13,7 @@ final class EpisodesTabCoordinator: Coordinator {
     var dependency: IDependency
     
     lazy var episodesController = {
-        let vc = EpisodesAssembly.configure(dependency: dependency)
+        let vc = EpisodesAssembly.configure(dependency: dependency, didTapOnCharacter: didTapOnCharacter(character:))
         return vc
     }()
     
@@ -26,6 +26,11 @@ final class EpisodesTabCoordinator: Coordinator {
         rootViewController.setViewControllers([episodesController], animated: false)
     }
     
+    //MARK: Closures to pass
+    private func didTapOnCharacter(character: CharacterResponse) {
+        let vc = DetailAssembly.configure(character: character)
+        rootViewController.show(vc, sender: self)
+    }
     
     
 }

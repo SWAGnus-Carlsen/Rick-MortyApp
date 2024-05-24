@@ -14,6 +14,10 @@
 		121805532BFE6F8D00A605DD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121805522BFE6F8D00A605DD /* NetworkService.swift */; };
 		121805552BFE774D00A605DD /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121805542BFE774D00A605DD /* NetworkError.swift */; };
 		121805582BFEA1E200A605DD /* CharacterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121805572BFEA1E200A605DD /* CharacterResponse.swift */; };
+		12425DBA2C00988D00A4EC64 /* DetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DB92C00988D00A4EC64 /* DetailController.swift */; };
+		12425DBC2C00989B00A4EC64 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DBB2C00989B00A4EC64 /* DetailViewModel.swift */; };
+		12425DBE2C0098A900A4EC64 /* DetailAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DBD2C0098A900A4EC64 /* DetailAssembly.swift */; };
+		12425DC12C009CAE00A4EC64 /* ChracterInfoTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DC02C009CAD00A4EC64 /* ChracterInfoTableCell.swift */; };
 		12B91DAD2BFC010200FAFF2B /* UITextField + leftImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B91DAC2BFC010200FAFF2B /* UITextField + leftImage.swift */; };
 		12E0382E2BF69C670019401D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E0382D2BF69C670019401D /* AppDelegate.swift */; };
 		12E038302BF69C670019401D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E0382F2BF69C670019401D /* SceneDelegate.swift */; };
@@ -39,6 +43,10 @@
 		121805522BFE6F8D00A605DD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		121805542BFE774D00A605DD /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		121805572BFEA1E200A605DD /* CharacterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterResponse.swift; sourceTree = "<group>"; };
+		12425DB92C00988D00A4EC64 /* DetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailController.swift; sourceTree = "<group>"; };
+		12425DBB2C00989B00A4EC64 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		12425DBD2C0098A900A4EC64 /* DetailAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAssembly.swift; sourceTree = "<group>"; };
+		12425DC02C009CAD00A4EC64 /* ChracterInfoTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChracterInfoTableCell.swift; sourceTree = "<group>"; };
 		12B91DAC2BFC010200FAFF2B /* UITextField + leftImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField + leftImage.swift"; sourceTree = "<group>"; };
 		12E0382A2BF69C670019401D /* RickAndMortyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RickAndMortyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		12E0382D2BF69C670019401D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -111,6 +119,25 @@
 			path = NetworkService;
 			sourceTree = "<group>";
 		};
+		12425DB82C00986200A4EC64 /* DetailScreen */ = {
+			isa = PBXGroup;
+			children = (
+				12425DBF2C009C6E00A4EC64 /* Cell */,
+				12425DB92C00988D00A4EC64 /* DetailController.swift */,
+				12425DBB2C00989B00A4EC64 /* DetailViewModel.swift */,
+				12425DBD2C0098A900A4EC64 /* DetailAssembly.swift */,
+			);
+			path = DetailScreen;
+			sourceTree = "<group>";
+		};
+		12425DBF2C009C6E00A4EC64 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				12425DC02C009CAD00A4EC64 /* ChracterInfoTableCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		12B91DAE2BFC011200FAFF2B /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +152,7 @@
 			children = (
 				12EE3A7B2BF7C1B800CAD2EE /* LaunchAnimation */,
 				12EE3A8E2BFB6C5E00CAD2EE /* EpisodesScreen */,
+				12425DB82C00986200A4EC64 /* DetailScreen */,
 			);
 			path = Screen;
 			sourceTree = "<group>";
@@ -274,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1218054A2BFCCFA900A605DD /* EpisodeResponse.swift in Sources */,
+				12425DBA2C00988D00A4EC64 /* DetailController.swift in Sources */,
 				12EE3A7A2BF7BD4000CAD2EE /* HomeController.swift in Sources */,
 				121805582BFEA1E200A605DD /* CharacterResponse.swift in Sources */,
 				12EE3A8D2BFB6C5900CAD2EE /* EpisodesAssembly.swift in Sources */,
@@ -281,6 +310,8 @@
 				121805532BFE6F8D00A605DD /* NetworkService.swift in Sources */,
 				12B91DAD2BFC010200FAFF2B /* UITextField + leftImage.swift in Sources */,
 				121805482BFC19CE00A605DD /* EpisodesCVCell.swift in Sources */,
+				12425DC12C009CAE00A4EC64 /* ChracterInfoTableCell.swift in Sources */,
+				12425DBC2C00989B00A4EC64 /* DetailViewModel.swift in Sources */,
 				1218054D2BFCD43100A605DD /* Data + prettyPrintedJSON.swift in Sources */,
 				12EE3A892BFB6C2F00CAD2EE /* EpisodesController.swift in Sources */,
 				12E038322BF69C670019401D /* SplashController.swift in Sources */,
@@ -290,6 +321,7 @@
 				12E038302BF69C670019401D /* SceneDelegate.swift in Sources */,
 				12EE3A842BF7E65200CAD2EE /* EpisodesTabCoordinator.swift in Sources */,
 				12EE3A802BF7E57200CAD2EE /* ApplicationCoordinator.swift in Sources */,
+				12425DBE2C0098A900A4EC64 /* DetailAssembly.swift in Sources */,
 				121805502BFE6F3F00A605DD /* Dependency.swift in Sources */,
 				12EE3A862BF7E68D00CAD2EE /* FavoriteTabCoordinator.swift in Sources */,
 				121805552BFE774D00A605DD /* NetworkError.swift in Sources */,
@@ -439,6 +471,8 @@
 				DEVELOPMENT_TEAM = CCCW4AN62Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RickAndMortyApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Это необходимо, чтобы сканировать штрихкоды, номер карты и использовать другие возможности";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Это необходимо для добавления ваших фотографий";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -467,6 +501,8 @@
 				DEVELOPMENT_TEAM = CCCW4AN62Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RickAndMortyApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Это необходимо, чтобы сканировать штрихкоды, номер карты и использовать другие возможности";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Это необходимо для добавления ваших фотографий";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
