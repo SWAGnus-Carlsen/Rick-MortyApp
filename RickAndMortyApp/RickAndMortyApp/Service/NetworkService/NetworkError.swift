@@ -11,6 +11,7 @@ enum NetworkError: LocalizedError {
     case decodingError(Error)
     case requestError(Error)
     case emptyData
+    case cannotConvertImage
     case imageFetchingError
     
     public var errorDescription: String {
@@ -19,6 +20,7 @@ enum NetworkError: LocalizedError {
         case .requestError(let error): return "Fetching error : \(error)"
         case .imageFetchingError: return "Image fetching error"
         case .emptyData: return "Request returned an empty data"
+        case .cannotConvertImage: return "Cannot convert image from data"
         }
     }
 }

@@ -14,7 +14,10 @@ protocol INetworkService {
 }
 
 final class NetworkService: INetworkService {
+    //MARK: Properties
+    private var imagesCache = NSCache<NSString, UIImage>()
     
+    //MARK: Methods
     func getEpisodes(_ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void) {
         URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=1")!)) { data,_,error in
             if let error {
@@ -64,17 +67,33 @@ final class NetworkService: INetworkService {
     }
     
     func getImage(with characterId: Int, for imageView: UIImageView) {
-        URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/character/avatar/\(characterId).jpeg")!)) { data,_,error in
+        guard let url = URL(string: "https://rickandmortyapi.com/api/character/avatar/\(characterId).jpeg") else { return }
+        
+        if let cachedImage = imagesCache.object(forKey: url.absoluteString as NSString) {
+            DispatchQueue.main.async {
+                imageView.image = cachedImage
+            }
+        }
+        
+        let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad)
+        
+        URLSession.shared.dataTask(with: request ) { data,_,error in
             if let error {
                 print("\(NetworkError.imageFetchingError) in   NetworkService.\(#function)")
             }
             
             guard let data else {
-                print("\(NetworkError.emptyData)In function  NetworkService.\(#function)")
+                print("\(NetworkError.emptyData) In function  NetworkService.\(#function)")
                 return
             }
+            guard let receivedImage = UIImage(data: data) else {
+                print("\(NetworkError.cannotConvertImage) In function  NetworkService.\(#function)")
+                return
+            }
+            self.imagesCache.setObject(receivedImage, forKey: url.absoluteString as NSString)
+            
             DispatchQueue.main.async {
-                imageView.image = UIImage(data: data)
+                imageView.image = receivedImage
             }
             
             

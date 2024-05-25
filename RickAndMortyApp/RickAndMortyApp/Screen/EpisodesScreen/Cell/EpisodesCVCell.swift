@@ -95,10 +95,10 @@ final class EpisodesCVCell: UICollectionViewCell {
     }
     
     //MARK: Setup methods
-    func setupCell(with episode: Episode, and character: CharacterResponse,_ networkService: INetworkService) {
-        networkService.getImage(with: character.id, for: episodeImageView)
+    func setupCell(with episode: Episode, and character: CharacterResponse?, _ networkService: INetworkService?) {
+        networkService?.getImage(with: character?.id ?? 0, for: episodeImageView)
         DispatchQueue.main.async {
-            self.nameLabel.text = character.name
+            self.nameLabel.text = character?.name
             self.descriptionLabel.text = "\(episode.name) | \(episode.episode)"
         }
         

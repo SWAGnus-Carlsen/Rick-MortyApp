@@ -29,7 +29,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
             }
         }
     }
-    private var imageURLs: [String] = []
+    private var characterURLs: [String] = []
     private var shownCharacters: [CharacterResponse] = []
     
     
@@ -72,7 +72,7 @@ private extension EpisodesController {
         view.backgroundColor = .white
     }
     
-    func  setupConstraints() {
+    func setupConstraints() {
         NSLayoutConstraint.activate([
             rickAndMortyImage.topAnchor.constraint(equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 2),
             rickAndMortyImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
@@ -174,15 +174,18 @@ extension EpisodesController {
         let currentEpisode = episodes[indexPath.row]
         var currentCharacter: CharacterResponse?
         #warning("Optimize this one")
-        if imageURLs.count <= 19 {
-            imageURLs.append(currentEpisode.characters.randomElement() ?? "")
+        if characterURLs.count <= 19 {
+            let randomCharacter = currentEpisode.characters.randomElement() ?? ""
+            characterURLs.append(randomCharacter)
         }
-        networkService.getCharacter(with: imageURLs[indexPath.row] ) { [weak self] result in
+        networkService.getCharacter(with: characterURLs[indexPath.row] ) { [weak self] result in
             switch result {
             case .success(let character):
-//                print("\(indexPath.row) : \(character)")
+                print("\(indexPath.row) : \(character)")
+                print(self?.characterURLs.count)
+                currentCharacter = character
                 self?.shownCharacters.append(character)
-                cell.setupCell(with: currentEpisode, and: self!.shownCharacters[indexPath.row], self!.networkService)
+                cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService)
             case .failure(_):
                 ()
             }
@@ -203,3 +206,5 @@ extension EpisodesController {
 //    } ))
 //    
 //}
+
+
