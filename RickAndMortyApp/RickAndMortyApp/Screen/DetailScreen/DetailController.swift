@@ -23,7 +23,8 @@ final class DetailController: UIViewController, UITableViewDelegate, UITableView
     init(character: CharacterResponse) {
         self.character = character
         super.init(nibName: nil, bundle: nil)
-        characterImageView.image = .episodePlaceholder
+        #warning("Network service should be injected here")
+        NetworkService().getImage(with: character.id, for: characterImageView)
         nameLabel.text = character.name
     }
     

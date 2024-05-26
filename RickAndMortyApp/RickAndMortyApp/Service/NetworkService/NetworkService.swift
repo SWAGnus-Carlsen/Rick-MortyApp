@@ -8,18 +8,20 @@
 import UIKit
 
 protocol INetworkService {
-    func getEpisodes(_ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void)
+    func getAllEpisodes(forPage: Int, _ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void)
     func getCharacter(with urlString: String, completion: @escaping (Result<CharacterResponse, NetworkError>) -> Void )
     func getImage(with characterId: Int, for imageView: UIImageView)
+    func getCertainEpisodes(withIDs ids: [Int] , _ completion: @escaping (Result<[Episode], NetworkError>) -> Void)
 }
 
 final class NetworkService: INetworkService {
+    
     //MARK: Properties
     private var imagesCache = NSCache<NSString, UIImage>()
     
-    //MARK: Methods
-    func getEpisodes(_ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void) {
-        URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=1")!)) { data,_,error in
+    //MARK: Interface methods
+    func getAllEpisodes(forPage page: Int, _ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void) {
+        URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=\(page)")!)) { data,_,error in
             if let error {
                 completion(.failure(NetworkError.requestError(error)))
                 print("In function  NetworkService.\(#function)")
@@ -100,4 +102,44 @@ final class NetworkService: INetworkService {
         }.resume()
     }
     
+    func getCertainEpisodes(withIDs ids: [Int] , _ completion: @escaping (Result<[Episode], NetworkError>) -> Void) {
+        
+        let url = makeURLForSeveralEpisodesRequest(forIDs: ids)
+        URLSession.shared.dataTask(with: URLRequest(url: url)) { data,_,error in
+            if let error {
+                completion(.failure(NetworkError.requestError(error)))
+                print("In function  NetworkService.\(#function)")
+            }
+            
+            guard let data else {
+                completion(.failure(NetworkError.emptyData))
+                print("In function  NetworkService.\(#function)")
+                return
+            }
+            do {
+                print(data.prettyPrintedJSONString)
+                let response = try JSONDecoder().decode([Episode].self, from: data)
+                completion(.success(response))
+            } catch {
+                completion(.failure(NetworkError.decodingError(error)))
+                print("In function  NetworkService.\(#function)")
+            }
+            
+        }.resume()
+    }
+    
+    
+    //MARK: Private methods
+    private func makeURLForSeveralEpisodesRequest(forIDs ids: [Int] ) -> URL {
+        var baseURLString = "https://rickandmortyapi.com/api/episode/"
+        ids.forEach {
+            baseURLString += "\($0),"
+        }
+        baseURLString.removeLast()
+        guard let url = URL(string: baseURLString) else {
+            #warning("What to do with this URL?")
+            return URL(string: "")!
+        }
+        return url
+    }
 }

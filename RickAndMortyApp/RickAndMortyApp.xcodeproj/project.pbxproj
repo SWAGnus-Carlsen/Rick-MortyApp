@@ -14,6 +14,9 @@
 		121805532BFE6F8D00A605DD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121805522BFE6F8D00A605DD /* NetworkService.swift */; };
 		121805552BFE774D00A605DD /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121805542BFE774D00A605DD /* NetworkError.swift */; };
 		121805582BFEA1E200A605DD /* CharacterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121805572BFEA1E200A605DD /* CharacterResponse.swift */; };
+		12406F0B2C03C49B00D9AEB5 /* FavouritesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12406F0A2C03C49B00D9AEB5 /* FavouritesController.swift */; };
+		12406F0D2C03C4AF00D9AEB5 /* FavouritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12406F0C2C03C4AF00D9AEB5 /* FavouritesViewModel.swift */; };
+		12406F0F2C03C4BE00D9AEB5 /* FavouritesAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12406F0E2C03C4BE00D9AEB5 /* FavouritesAssembly.swift */; };
 		12425DBA2C00988D00A4EC64 /* DetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DB92C00988D00A4EC64 /* DetailController.swift */; };
 		12425DBC2C00989B00A4EC64 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DBB2C00989B00A4EC64 /* DetailViewModel.swift */; };
 		12425DBE2C0098A900A4EC64 /* DetailAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12425DBD2C0098A900A4EC64 /* DetailAssembly.swift */; };
@@ -29,7 +32,7 @@
 		12EE3A802BF7E57200CAD2EE /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A7F2BF7E57200CAD2EE /* ApplicationCoordinator.swift */; };
 		12EE3A822BF7E62800CAD2EE /* TabBarCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A812BF7E62800CAD2EE /* TabBarCoordinator.swift */; };
 		12EE3A842BF7E65200CAD2EE /* EpisodesTabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A832BF7E65200CAD2EE /* EpisodesTabCoordinator.swift */; };
-		12EE3A862BF7E68D00CAD2EE /* FavoriteTabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A852BF7E68D00CAD2EE /* FavoriteTabCoordinator.swift */; };
+		12EE3A862BF7E68D00CAD2EE /* FavouritesTabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A852BF7E68D00CAD2EE /* FavouritesTabCoordinator.swift */; };
 		12EE3A892BFB6C2F00CAD2EE /* EpisodesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A882BFB6C2F00CAD2EE /* EpisodesController.swift */; };
 		12EE3A8B2BFB6C4600CAD2EE /* EpisodesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A8A2BFB6C4600CAD2EE /* EpisodesViewModel.swift */; };
 		12EE3A8D2BFB6C5900CAD2EE /* EpisodesAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A8C2BFB6C5900CAD2EE /* EpisodesAssembly.swift */; };
@@ -43,6 +46,9 @@
 		121805522BFE6F8D00A605DD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		121805542BFE774D00A605DD /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		121805572BFEA1E200A605DD /* CharacterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterResponse.swift; sourceTree = "<group>"; };
+		12406F0A2C03C49B00D9AEB5 /* FavouritesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesController.swift; sourceTree = "<group>"; };
+		12406F0C2C03C4AF00D9AEB5 /* FavouritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewModel.swift; sourceTree = "<group>"; };
+		12406F0E2C03C4BE00D9AEB5 /* FavouritesAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesAssembly.swift; sourceTree = "<group>"; };
 		12425DB92C00988D00A4EC64 /* DetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailController.swift; sourceTree = "<group>"; };
 		12425DBB2C00989B00A4EC64 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
 		12425DBD2C0098A900A4EC64 /* DetailAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAssembly.swift; sourceTree = "<group>"; };
@@ -60,7 +66,7 @@
 		12EE3A7F2BF7E57200CAD2EE /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
 		12EE3A812BF7E62800CAD2EE /* TabBarCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarCoordinator.swift; sourceTree = "<group>"; };
 		12EE3A832BF7E65200CAD2EE /* EpisodesTabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesTabCoordinator.swift; sourceTree = "<group>"; };
-		12EE3A852BF7E68D00CAD2EE /* FavoriteTabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteTabCoordinator.swift; sourceTree = "<group>"; };
+		12EE3A852BF7E68D00CAD2EE /* FavouritesTabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesTabCoordinator.swift; sourceTree = "<group>"; };
 		12EE3A882BFB6C2F00CAD2EE /* EpisodesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesController.swift; sourceTree = "<group>"; };
 		12EE3A8A2BFB6C4600CAD2EE /* EpisodesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesViewModel.swift; sourceTree = "<group>"; };
 		12EE3A8C2BFB6C5900CAD2EE /* EpisodesAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesAssembly.swift; sourceTree = "<group>"; };
@@ -119,6 +125,16 @@
 			path = NetworkService;
 			sourceTree = "<group>";
 		};
+		12406F092C03C45600D9AEB5 /* FavouritesScreen */ = {
+			isa = PBXGroup;
+			children = (
+				12406F0A2C03C49B00D9AEB5 /* FavouritesController.swift */,
+				12406F0C2C03C4AF00D9AEB5 /* FavouritesViewModel.swift */,
+				12406F0E2C03C4BE00D9AEB5 /* FavouritesAssembly.swift */,
+			);
+			path = FavouritesScreen;
+			sourceTree = "<group>";
+		};
 		12425DB82C00986200A4EC64 /* DetailScreen */ = {
 			isa = PBXGroup;
 			children = (
@@ -150,6 +166,7 @@
 		12B91DAF2BFC012300FAFF2B /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				12406F092C03C45600D9AEB5 /* FavouritesScreen */,
 				12EE3A7B2BF7C1B800CAD2EE /* LaunchAnimation */,
 				12EE3A8E2BFB6C5E00CAD2EE /* EpisodesScreen */,
 				12425DB82C00986200A4EC64 /* DetailScreen */,
@@ -215,7 +232,7 @@
 			children = (
 				12EE3A812BF7E62800CAD2EE /* TabBarCoordinator.swift */,
 				12EE3A832BF7E65200CAD2EE /* EpisodesTabCoordinator.swift */,
-				12EE3A852BF7E68D00CAD2EE /* FavoriteTabCoordinator.swift */,
+				12EE3A852BF7E68D00CAD2EE /* FavouritesTabCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -305,12 +322,15 @@
 				12425DBA2C00988D00A4EC64 /* DetailController.swift in Sources */,
 				12EE3A7A2BF7BD4000CAD2EE /* HomeController.swift in Sources */,
 				121805582BFEA1E200A605DD /* CharacterResponse.swift in Sources */,
+				12406F0F2C03C4BE00D9AEB5 /* FavouritesAssembly.swift in Sources */,
 				12EE3A8D2BFB6C5900CAD2EE /* EpisodesAssembly.swift in Sources */,
 				12EE3A8B2BFB6C4600CAD2EE /* EpisodesViewModel.swift in Sources */,
 				121805532BFE6F8D00A605DD /* NetworkService.swift in Sources */,
 				12B91DAD2BFC010200FAFF2B /* UITextField + leftImage.swift in Sources */,
+				12406F0D2C03C4AF00D9AEB5 /* FavouritesViewModel.swift in Sources */,
 				121805482BFC19CE00A605DD /* EpisodesCVCell.swift in Sources */,
 				12425DC12C009CAE00A4EC64 /* ChracterInfoTableCell.swift in Sources */,
+				12406F0B2C03C49B00D9AEB5 /* FavouritesController.swift in Sources */,
 				12425DBC2C00989B00A4EC64 /* DetailViewModel.swift in Sources */,
 				1218054D2BFCD43100A605DD /* Data + prettyPrintedJSON.swift in Sources */,
 				12EE3A892BFB6C2F00CAD2EE /* EpisodesController.swift in Sources */,
@@ -323,7 +343,7 @@
 				12EE3A802BF7E57200CAD2EE /* ApplicationCoordinator.swift in Sources */,
 				12425DBE2C0098A900A4EC64 /* DetailAssembly.swift in Sources */,
 				121805502BFE6F3F00A605DD /* Dependency.swift in Sources */,
-				12EE3A862BF7E68D00CAD2EE /* FavoriteTabCoordinator.swift in Sources */,
+				12EE3A862BF7E68D00CAD2EE /* FavouritesTabCoordinator.swift in Sources */,
 				121805552BFE774D00A605DD /* NetworkError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

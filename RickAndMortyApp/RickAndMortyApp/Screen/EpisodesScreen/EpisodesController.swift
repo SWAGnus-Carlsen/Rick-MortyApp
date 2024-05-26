@@ -8,7 +8,7 @@
 import UIKit
 
 
-final class EpisodesController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+final class EpisodesController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIScrollViewDelegate {
     
     //MARK: UI Elements
     private lazy var rickAndMortyImage: UIImageView = makeRickAndMortyImage()
@@ -31,7 +31,8 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     }
     private var characterURLs: [String] = []
     private var shownCharacters: [CharacterResponse] = []
-    
+    private var lastContentOffset: CGFloat = 0
+    private var isScrollingDown = true
     
     //MARK: Closures
     private let didTapOnCharacter: (_ character: CharacterResponse) -> Void
@@ -54,13 +55,25 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         setupUI()
         setupEpisodesCollection()
         setupConstraints()
-        networkService.getEpisodes { [weak self] result in
+        networkService.getAllEpisodes(forPage: 1) { [weak self] result in
             switch result {
             case .success(let response):
-                self?.episodes = response.results
+                let episodesArray: [Episode] = response.results
+                self?.getAllCharacterURLs(from: episodesArray)
+                self?.episodes = episodesArray
             case .failure(let error):
                 print(error.errorDescription)
             }
+        }
+        
+        
+    }
+    
+    //MARK: Methods
+    private func getAllCharacterURLs(from episodesArray: [Episode]) {
+        for episode in episodesArray {
+            let randomCharacterURL = episode.characters.randomElement() ?? ""
+            characterURLs.append(randomCharacterURL)
         }
     }
 }
@@ -173,16 +186,12 @@ extension EpisodesController {
         
         let currentEpisode = episodes[indexPath.row]
         var currentCharacter: CharacterResponse?
-        #warning("Optimize this one")
-        if characterURLs.count <= 19 {
-            let randomCharacter = currentEpisode.characters.randomElement() ?? ""
-            characterURLs.append(randomCharacter)
-        }
+        
+        
         networkService.getCharacter(with: characterURLs[indexPath.row] ) { [weak self] result in
             switch result {
             case .success(let character):
-                print("\(indexPath.row) : \(character)")
-                print(self?.characterURLs.count)
+                print("\(indexPath.row) : \(character.name)")
                 currentCharacter = character
                 self?.shownCharacters.append(character)
                 cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService)
@@ -200,6 +209,25 @@ extension EpisodesController {
     }
 }
 
+
+extension EpisodesController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        if (lastContentOffset > scrollView.contentOffset.y) && (lastContentOffset < scrollView.contentSize.height - scrollView.frame.height) {
+            // move up
+            isScrollingDown = false
+            
+        } else if lastContentOffset < scrollView.contentOffset.y && scrollView.contentOffset.y > 0 {
+            // move down
+         
+            isScrollingDown = true
+           
+        }
+        
+        // update the new position acquired
+        lastContentOffset = scrollView.contentOffset.y
+    }
+}
 //#Preview("") {
 //    UINavigationController(rootViewController: EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel(), didTapOnCharacter: {character in
 //        UINavigationController().pushViewController(DetailAssembly.configure(character: character), animated: true)

@@ -5,8 +5,16 @@
 //  Created by Vitaliy Halai on 20.05.24.
 //
 
-import Foundation
+import UIKit
 
-final class EpisodesViewModel {
+final class EpisodesViewModel: NSObject {//, UICollectionViewDataSource, UICollectionViewDelegate
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        
+//    }
+//    
     
 }

@@ -17,7 +17,7 @@ final class TabBarCoordinator: Coordinator {
         self.rootViewController = UITabBarController()
         rootViewController.tabBar.isTranslucent = true
         rootViewController.tabBar.backgroundColor = .white
-        rootViewController.navigationController?.isNavigationBarHidden = true
+//        rootViewController.navigationController?.isNavigationBarHidden = true
         self.dependency = dependency
     }
     
@@ -28,7 +28,7 @@ final class TabBarCoordinator: Coordinator {
         let episodesController = episodesTabCoordinator.rootViewController
         episodesController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house") , selectedImage: UIImage(systemName: "house.fill"))
         
-        let favoriteEpisodesCoordinator = FavoriteTabCoordinator()
+        let favoriteEpisodesCoordinator = FavouritesTabCoordinator()
         favoriteEpisodesCoordinator.start()
         childCoordinators.append(favoriteEpisodesCoordinator)
         let favoriteEpisodesController = favoriteEpisodesCoordinator.rootViewController
