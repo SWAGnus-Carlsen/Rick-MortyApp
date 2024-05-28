@@ -191,7 +191,7 @@ extension EpisodesController {
         networkService.getCharacter(with: characterURLs[indexPath.row] ) { [weak self] result in
             switch result {
             case .success(let character):
-                print("\(indexPath.row) : \(character.name)")
+               // print("\(indexPath.row) : \(character.name)")
                 currentCharacter = character
                 self?.shownCharacters.append(character)
                 cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService)

@@ -7,54 +7,38 @@
 
 import UIKit
 
-final class FavouritesController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+final class FavouritesController: UIViewController {
 
     //MARK: UI Elements
     private var episodesCollection: UICollectionView?
     
-    //MARK: Network service
-    private var networkService = NetworkService()
+    //MARK: ViewModel
+    private let viewModel: FavouritesViewModel
     
-    //MARK: Propeties
-    private var episodes: [Episode] = []{
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.episodesCollection?.reloadData()
-            }
-        }
+    //MARK: Constructor
+    init(viewModel: FavouritesViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
     }
-    private var characterURLs: [String] = []
-    private var shownCharacters: [CharacterResponse] = []
     
-    //MARK: Closures
-    //private let didTapOnCharacter: (_ character: CharacterResponse) -> Void
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(loadList(notification:)), name: NSNotification.Name(rawValue: "load"), object: nil)
         setupUI()
         setupEpisodesCollection()
+        viewModel.getCertainEpisodes(withIDs: [])
         setupConstraints()
-        
-        networkService.getCertainEpisodes(withIDs: [1, 20, 25]){ [weak self] result in
-            switch result {
-            case .success(let episodesArray):
-                self?.getAllCharacterURLs(from: episodesArray)
-                self?.episodes = episodesArray
-            case .failure(let error):
-                print(error.errorDescription)
-            }
-        }
-        
-        
     }
-
-    //MARK: Methods
-    private func getAllCharacterURLs(from episodesArray: [Episode]) {
-        for episode in episodesArray {
-            let randomCharacterURL = episode.characters.randomElement() ?? ""
-            characterURLs.append(randomCharacterURL)
-        }
+    
+    //MARK: Action
+    @objc
+    private func loadList(notification: NSNotification) {
+      self.episodesCollection?.reloadData()
     }
 }
 
@@ -62,7 +46,7 @@ final class FavouritesController: UIViewController, UICollectionViewDelegate, UI
 private extension FavouritesController {
     func setupUI() {
         view.backgroundColor = .systemBackground
-        //self.title = "Favourite episodes"
+        navigationItem.title = "Favourite episodes"
     }
     
     func setupConstraints() {
@@ -95,47 +79,9 @@ extension FavouritesController {
         
         episodesCollection.register(EpisodesCVCell.self,
                                 forCellWithReuseIdentifier: EpisodesCVCell.identifier)
-        episodesCollection.delegate = self
-        episodesCollection.dataSource = self
+        episodesCollection.delegate = viewModel
+        episodesCollection.dataSource = viewModel
         episodesCollection.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        episodes.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: EpisodesCVCell.identifier,
-            for: indexPath
-        ) as? EpisodesCVCell
-        else {
-            return UICollectionViewCell()
-        }
-        
-        let currentEpisode = episodes[indexPath.row]
-        var currentCharacter: CharacterResponse?
-        
-        
-        networkService.getCharacter(with: characterURLs[indexPath.row] ) { [weak self] result in
-            switch result {
-            case .success(let character):
-                print("\(indexPath.row) : \(character.name)")
-                currentCharacter = character
-                self?.shownCharacters.append(character)
-                cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService)
-            case .failure(_):
-                ()
-            }
-        }
- 
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: false)
-        //didTapOnCharacter(shownCharacters[indexPath.row])
-        let vc = DetailController(character: shownCharacters[indexPath.row])
-        navigationController?.pushViewController(vc, animated: true)
-    }
 }

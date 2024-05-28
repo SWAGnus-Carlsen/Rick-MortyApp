@@ -27,7 +27,6 @@
 		12E038322BF69C670019401D /* SplashController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E038312BF69C670019401D /* SplashController.swift */; };
 		12E038372BF69C6B0019401D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12E038362BF69C6B0019401D /* Assets.xcassets */; };
 		12E0383A2BF69C6B0019401D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12E038382BF69C6B0019401D /* LaunchScreen.storyboard */; };
-		12EE3A7A2BF7BD4000CAD2EE /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A792BF7BD4000CAD2EE /* HomeController.swift */; };
 		12EE3A7E2BF7E55200CAD2EE /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A7D2BF7E55200CAD2EE /* Coordinator.swift */; };
 		12EE3A802BF7E57200CAD2EE /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A7F2BF7E57200CAD2EE /* ApplicationCoordinator.swift */; };
 		12EE3A822BF7E62800CAD2EE /* TabBarCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A812BF7E62800CAD2EE /* TabBarCoordinator.swift */; };
@@ -61,7 +60,6 @@
 		12E038362BF69C6B0019401D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		12E038392BF69C6B0019401D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		12E0383B2BF69C6B0019401D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		12EE3A792BF7BD4000CAD2EE /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		12EE3A7D2BF7E55200CAD2EE /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		12EE3A7F2BF7E57200CAD2EE /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
 		12EE3A812BF7E62800CAD2EE /* TabBarCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarCoordinator.swift; sourceTree = "<group>"; };
@@ -166,10 +164,10 @@
 		12B91DAF2BFC012300FAFF2B /* Screen */ = {
 			isa = PBXGroup;
 			children = (
-				12406F092C03C45600D9AEB5 /* FavouritesScreen */,
 				12EE3A7B2BF7C1B800CAD2EE /* LaunchAnimation */,
 				12EE3A8E2BFB6C5E00CAD2EE /* EpisodesScreen */,
 				12425DB82C00986200A4EC64 /* DetailScreen */,
+				12406F092C03C45600D9AEB5 /* FavouritesScreen */,
 			);
 			path = Screen;
 			sourceTree = "<group>";
@@ -201,7 +199,6 @@
 				12B91DAF2BFC012300FAFF2B /* Screen */,
 				1218054B2BFCD02700A605DD /* Model */,
 				12B91DAE2BFC011200FAFF2B /* Extension */,
-				12EE3A792BF7BD4000CAD2EE /* HomeController.swift */,
 				12E038362BF69C6B0019401D /* Assets.xcassets */,
 				12E0382D2BF69C670019401D /* AppDelegate.swift */,
 				12E0382F2BF69C670019401D /* SceneDelegate.swift */,
@@ -320,7 +317,6 @@
 			files = (
 				1218054A2BFCCFA900A605DD /* EpisodeResponse.swift in Sources */,
 				12425DBA2C00988D00A4EC64 /* DetailController.swift in Sources */,
-				12EE3A7A2BF7BD4000CAD2EE /* HomeController.swift in Sources */,
 				121805582BFEA1E200A605DD /* CharacterResponse.swift in Sources */,
 				12406F0F2C03C4BE00D9AEB5 /* FavouritesAssembly.swift in Sources */,
 				12EE3A8D2BFB6C5900CAD2EE /* EpisodesAssembly.swift in Sources */,

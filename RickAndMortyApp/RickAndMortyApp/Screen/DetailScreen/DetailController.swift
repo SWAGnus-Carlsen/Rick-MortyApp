@@ -88,7 +88,7 @@ private extension DetailController {
             characterImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             characterImageView.widthAnchor.constraint(equalToConstant: 148),
             characterImageView.heightAnchor.constraint(equalToConstant: 148),
-            characterImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 64),
+            characterImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 64),
             
             changeImageButton.leadingAnchor.constraint(equalTo: characterImageView.trailingAnchor, constant: 16),
             changeImageButton.widthAnchor.constraint(equalToConstant: 32),
