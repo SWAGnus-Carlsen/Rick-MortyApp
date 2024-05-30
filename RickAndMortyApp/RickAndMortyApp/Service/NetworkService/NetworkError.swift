@@ -13,6 +13,7 @@ enum NetworkError: LocalizedError {
     case emptyData
     case cannotConvertImage
     case imageFetchingError
+    case badURL
     
     public var errorDescription: String {
         switch self {
@@ -21,6 +22,7 @@ enum NetworkError: LocalizedError {
         case .imageFetchingError: return "Image fetching error"
         case .emptyData: return "Request returned an empty data"
         case .cannotConvertImage: return "Cannot convert image from data"
+        case .badURL: return "Cannot make a proper URL"
         }
     }
 }

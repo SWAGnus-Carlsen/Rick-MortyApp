@@ -35,6 +35,7 @@
 		12EE3A892BFB6C2F00CAD2EE /* EpisodesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A882BFB6C2F00CAD2EE /* EpisodesController.swift */; };
 		12EE3A8B2BFB6C4600CAD2EE /* EpisodesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A8A2BFB6C4600CAD2EE /* EpisodesViewModel.swift */; };
 		12EE3A8D2BFB6C5900CAD2EE /* EpisodesAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EE3A8C2BFB6C5900CAD2EE /* EpisodesAssembly.swift */; };
+		12F7BAB52C072C11009BF300 /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F7BAB42C072C11009BF300 /* UserDefaultsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		12EE3A882BFB6C2F00CAD2EE /* EpisodesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesController.swift; sourceTree = "<group>"; };
 		12EE3A8A2BFB6C4600CAD2EE /* EpisodesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesViewModel.swift; sourceTree = "<group>"; };
 		12EE3A8C2BFB6C5900CAD2EE /* EpisodesAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesAssembly.swift; sourceTree = "<group>"; };
+		12F7BAB42C072C11009BF300 /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				121805562BFE791100A605DD /* NetworkService */,
+				12F7BAB42C072C11009BF300 /* UserDefaultsService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -330,6 +333,7 @@
 				12425DBC2C00989B00A4EC64 /* DetailViewModel.swift in Sources */,
 				1218054D2BFCD43100A605DD /* Data + prettyPrintedJSON.swift in Sources */,
 				12EE3A892BFB6C2F00CAD2EE /* EpisodesController.swift in Sources */,
+				12F7BAB52C072C11009BF300 /* UserDefaultsService.swift in Sources */,
 				12E038322BF69C670019401D /* SplashController.swift in Sources */,
 				12EE3A7E2BF7E55200CAD2EE /* Coordinator.swift in Sources */,
 				12EE3A822BF7E62800CAD2EE /* TabBarCoordinator.swift in Sources */,

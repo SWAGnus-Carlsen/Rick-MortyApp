@@ -104,7 +104,10 @@ final class NetworkService: INetworkService {
     
     func getCertainEpisodes(withIDs ids: [Int] , _ completion: @escaping (Result<[Episode], NetworkError>) -> Void) {
         
-        let url = makeURLForSeveralEpisodesRequest(forIDs: ids)
+        guard let url = makeURLForSeveralEpisodesRequest(forIDs: ids) else {
+            completion(.failure(NetworkError.badURL))
+            return
+        }
         URLSession.shared.dataTask(with: URLRequest(url: url)) { data,_,error in
             if let error {
                 completion(.failure(NetworkError.requestError(error)))
@@ -130,16 +133,13 @@ final class NetworkService: INetworkService {
     
     
     //MARK: Private methods
-    private func makeURLForSeveralEpisodesRequest(forIDs ids: [Int] ) -> URL {
+    private func makeURLForSeveralEpisodesRequest(forIDs ids: [Int] ) -> URL? {
         var baseURLString = "https://rickandmortyapi.com/api/episode/"
         ids.forEach {
             baseURLString += "\($0),"
         }
         baseURLString.removeLast()
-        guard let url = URL(string: baseURLString) else {
-            #warning("What to do with this URL?")
-            return URL(string: "")!
-        }
+        let url = URL(string: baseURLString)
         return url
     }
 }

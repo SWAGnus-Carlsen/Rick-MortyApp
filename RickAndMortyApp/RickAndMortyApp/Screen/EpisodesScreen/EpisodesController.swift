@@ -17,6 +17,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     
     //MARK: Services
     private var networkService: INetworkService
+    private var userdefaultsService: IUserDefaultsService
     
     //MARK: ViewModel
     private var viewModel: EpisodesViewModel
@@ -31,6 +32,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     }
     private var characterURLs: [String] = []
     private var shownCharacters: [CharacterResponse] = []
+    private var favEpisodesIds: [Int] = []
     private var lastContentOffset: CGFloat = 0
     private var isScrollingDown = true
     
@@ -40,9 +42,11 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     //MARK: Constructor
     init(dependency: IDependency, viewModel: EpisodesViewModel, didTapOnCharacter: @escaping (_ character: CharacterResponse) -> Void ) {
         self.networkService = dependency.networkService
+        self.userdefaultsService = dependency.userDefaultsService
         self.viewModel = viewModel
         self.didTapOnCharacter = didTapOnCharacter
         super.init(nibName: nil, bundle: nil)
+        favEpisodesIds = userdefaultsService.retrieve()
     }
     
     required init?(coder: NSCoder) {
@@ -194,7 +198,7 @@ extension EpisodesController {
                // print("\(indexPath.row) : \(character.name)")
                 currentCharacter = character
                 self?.shownCharacters.append(character)
-                cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService)
+                cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService , isLiked: false, tag: indexPath.row, selector: #selector(self?.didEnterName) )
             case .failure(_):
                 ()
             }
@@ -228,11 +232,13 @@ extension EpisodesController {
         lastContentOffset = scrollView.contentOffset.y
     }
 }
-//#Preview("") {
-//    UINavigationController(rootViewController: EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel(), didTapOnCharacter: {character in
-//        UINavigationController().pushViewController(DetailAssembly.configure(character: character), animated: true)
-//    } ))
-//    
-//}
+
+#Preview("") {
+    let dependency = Dependency()
+    return UINavigationController(rootViewController: EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel(), didTapOnCharacter: { character in
+        
+    } ))
+    
+}
 
 

@@ -108,7 +108,7 @@ private extension DetailController {
             characterInfoTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             characterInfoTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             characterInfoTable.topAnchor.constraint(equalTo: infoLabel.bottomAnchor, constant: 16),
-            characterInfoTable.bottomAnchor.constraint(greaterThanOrEqualTo: view.bottomAnchor, constant: -140)
+            characterInfoTable.bottomAnchor.constraint(greaterThanOrEqualTo: view.bottomAnchor, constant: -120)
             
         ])
         
@@ -176,7 +176,7 @@ extension DetailController {
         characterInfoTable.delegate = self
         characterInfoTable.dataSource = self
         characterInfoTable.translatesAutoresizingMaskIntoConstraints = false
-        characterInfoTable.isUserInteractionEnabled = false
+        //characterInfoTable.isUserInteractionEnabled = false
         characterInfoTable.register(ChracterInfoTableCell.self, forCellReuseIdentifier: ChracterInfoTableCell.identifier)
         characterInfoTable.separatorStyle = .none
         characterInfoTable.rowHeight = 64

@@ -11,6 +11,7 @@ final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollect
     
     //MARK: Service
     private let networkService: INetworkService
+    private let userDefaultsService: IUserDefaultsService
     
     //MARK: Closure
     private let didTapOnCharacterDetail: (_ character: CharacterResponse) -> Void
@@ -18,34 +19,52 @@ final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollect
     //MARK: Propeties
     private var episodes: [Episode] = []{
         didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.reloadCollectionData()
-            }
+           // DispatchQueue.main.async { [weak self] in
+           //     self?.reloadCollectionData()
+           //}
         }
     }
     private var characterURLs: [String] = []
     private var shownCharacters: [CharacterResponse] = []
-    private var ids: [Int] = []
+    private var favEpisodesIDs: [Int] = []
+    
+    let dispatchGroup = DispatchGroup()
     
     
     //MARK: Constructor
     init(dependency: IDependency, didTapOnCharacterDetail: @escaping (_ character: CharacterResponse) -> Void) {
         self.networkService = dependency.networkService
+        self.userDefaultsService = dependency.userDefaultsService
         self.didTapOnCharacterDetail = didTapOnCharacterDetail
     }
     
     //MARK: Public methods
-    public func getCertainEpisodes(withIDs ids: [Int]) {
-        networkService.getCertainEpisodes(withIDs: [1,2,3,12,23,24]) { [weak self] result in
+    public func getCertainEpisodes() {
+        networkService.getCertainEpisodes(withIDs: favEpisodesIDs) { [weak self] result in
             switch result {
             case .success(let episodesArray):
+                
                 self?.getAllCharacterURLs(from: episodesArray)
-                self?.episodes = episodesArray
+                self?.characterURLs.forEach {
+                    self?.getShownCharacter(from: $0)
+                }
+                
+                self?.dispatchGroup.notify(queue: .main) {
+                    self?.episodes = episodesArray
+                    self?.reloadCollectionData()
+                }
+                
+                
+                
             case .failure(let error):
                 print(error.errorDescription)
             }
             
         }
+    }
+    
+    public func getFavEpisodesIds() {
+        favEpisodesIDs = userDefaultsService.retrieve()
     }
     
     
@@ -58,9 +77,28 @@ final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollect
         }
     }
     
+    private func getShownCharacter(from urlString: String) {
+        dispatchGroup.enter()
+        networkService.getCharacter(with: urlString ) { [weak self] result in
+            switch result {
+            case .success(let character):
+                print("Appended : \(character.name)")
+                self?.shownCharacters.append(character)
+                self?.dispatchGroup.leave()
+            case .failure(_):
+                ()
+            }
+        }
+    }
+    
     private func reloadCollectionData() {
         NotificationCenter.default.post(name: NSNotification.Name("load"), object: nil)
     }
+    
+//    #warning("Я остановлися на этом ;//")
+//    private func deleteRow(at indexPath: Int) {
+//        NotificationCenter.default.post(name: NSNotification.Name("delete"), object: indexPath)
+//    }
     
 }
 
@@ -81,18 +119,9 @@ extension FavouritesViewModel {
         }
         
         let currentEpisode = episodes[indexPath.row]
-        let currentCharacterUrl = characterURLs[indexPath.row]
+        let currentCharacter = shownCharacters[indexPath.row]
         
-        networkService.getCharacter(with: currentCharacterUrl ) { [weak self] result in
-            switch result {
-            case .success(let character):
-                print("\(indexPath.row) : \(character.name)")
-                self?.shownCharacters.append(character)
-                cell.setupCell(with: currentEpisode, and: character, self?.networkService)
-            case .failure(_):
-                ()
-            }
-        }
+        cell.setupCell(with: currentEpisode, and: currentCharacter, networkService, isLiked: true, tag: indexPath.row, selector: #selector(likeTapped(_:)) )
  
         return cell
     }
@@ -100,5 +129,14 @@ extension FavouritesViewModel {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: false)
         didTapOnCharacterDetail(shownCharacters[indexPath.row])
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        print("\(#function) at \(indexPath.row)")
+    }
+    
+    @objc
+    func likeTapped(_ sender: UIButton) {
+        episodes.remove(at: sender.tag)
     }
 }

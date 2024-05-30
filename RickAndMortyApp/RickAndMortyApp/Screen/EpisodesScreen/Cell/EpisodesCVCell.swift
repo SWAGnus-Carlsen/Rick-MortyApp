@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 final class EpisodesCVCell: UICollectionViewCell {
     
@@ -14,6 +15,9 @@ final class EpisodesCVCell: UICollectionViewCell {
     
     //MARK: Properties
     private var isLiked: Bool = false
+    private var currentEpisode: Episode?
+    
+    private let didTapOnLike: () -> Void = { }
     
     //MARK: UI
     lazy var episodeImageView: UIImageView = {
@@ -88,22 +92,24 @@ final class EpisodesCVCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         episodeImageView.image = nil
-        #warning("Do smth with this")
-        likeButton.setImage(.like, for: .normal)
+        likeButton.setImage(nil, for: .normal)
         nameLabel.text = nil
         descriptionLabel.text = nil
     }
     
     //MARK: Setup methods
-    func setupCell(with episode: Episode, and character: CharacterResponse?, _ networkService: INetworkService?) {
+    func setupCell(with episode: Episode, and character: CharacterResponse?, _ networkService: INetworkService?, isLiked: Bool, tag: Int, selector: Selector) {
+        
+        currentEpisode = episode
+        
         networkService?.getImage(with: character?.id ?? 0, for: episodeImageView)
         DispatchQueue.main.async {
             self.nameLabel.text = character?.name
             self.descriptionLabel.text = "\(episode.name) | \(episode.episode)"
+            self.likeButton.setImage(isLiked ? .tappedLike : .like, for: .normal)
+            self.likeButton.tag = tag
+            self.likeButton.addTarget(self, action: selector, for: .touchUpInside)
         }
-        
-        
-        
     }
     
     //MARK: UI
@@ -125,6 +131,13 @@ final class EpisodesCVCell: UICollectionViewCell {
     private func didTapLike() {
         isLiked.toggle()
         likeButton.setImage(isLiked ? .tappedLike : .like, for: .normal)
+        if isLiked {
+            UserDefaultsService().add(with: currentEpisode?.id ?? 33)
+        } else {
+            UserDefaultsService().delete(with: currentEpisode?.id ?? 33)
+        }
+        
+        
     }
     
 }
