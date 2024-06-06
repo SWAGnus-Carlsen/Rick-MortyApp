@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class TabBarCoordinator: Coordinator {
+final class TabBarCoordinator: NSObject, Coordinator, UITabBarControllerDelegate {
     
     var rootViewController: UITabBarController
     var childCoordinators: [Coordinator] = []
@@ -15,13 +15,17 @@ final class TabBarCoordinator: Coordinator {
     
     init(dependency: IDependency) {
         self.rootViewController = UITabBarController()
+        
         rootViewController.tabBar.isTranslucent = true
         rootViewController.tabBar.backgroundColor = .white
 //        rootViewController.navigationController?.isNavigationBarHidden = true
         self.dependency = dependency
+        
     }
     
     func start() {
+        rootViewController.delegate = self
+        
         let episodesTabCoordinator = EpisodesTabCoordinator(dependency: dependency)
         episodesTabCoordinator.start()
         childCoordinators.append(episodesTabCoordinator)
@@ -39,4 +43,14 @@ final class TabBarCoordinator: Coordinator {
     }
     
     
+}
+
+extension TabBarCoordinator {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        guard viewController == tabBarController.viewControllers![1],
+              let navController = tabBarController.viewControllers![1] as? UINavigationController,
+              let favouritesVC = navController.topViewController as? FavouritesController else { return }
+        
+        print("Favourites vc opened")
+    }
 }

@@ -12,6 +12,7 @@ protocol INetworkService {
     func getCharacter(with urlString: String, completion: @escaping (Result<CharacterResponse, NetworkError>) -> Void )
     func getImage(with characterId: Int, for imageView: UIImageView)
     func getCertainEpisodes(withIDs ids: [Int] , _ completion: @escaping (Result<[Episode], NetworkError>) -> Void)
+    func getOneEpisode(withID id: Int , _ completion: @escaping (Result<Episode, NetworkError>) -> Void)
 }
 
 final class NetworkService: INetworkService {
@@ -57,7 +58,7 @@ final class NetworkService: INetworkService {
                 return
             }
             do {
-//                print(data.prettyPrintedJSONString)
+                //                print(data.prettyPrintedJSONString)
                 let response = try JSONDecoder().decode(CharacterResponse.self, from: data)
                 completion(.success(response))
             } catch {
@@ -130,6 +131,34 @@ final class NetworkService: INetworkService {
             
         }.resume()
     }
+    func getOneEpisode(withID id: Int , _ completion: @escaping (Result<Episode, NetworkError>) -> Void) {
+        
+        guard let url = makeURLForSeveralEpisodesRequest(forIDs: [id]) else {
+            completion(.failure(NetworkError.badURL))
+            return
+        }
+        URLSession.shared.dataTask(with: URLRequest(url: url)) { data,_,error in
+            if let error {
+                completion(.failure(NetworkError.requestError(error)))
+                print("In function  NetworkService.\(#function)")
+            }
+            
+            guard let data else {
+                completion(.failure(NetworkError.emptyData))
+                print("In function  NetworkService.\(#function)")
+                return
+            }
+            do {
+                //print(data.prettyPrintedJSONString)
+                let response = try JSONDecoder().decode(Episode.self, from: data)
+                completion(.success(response))
+            } catch {
+                completion(.failure(NetworkError.decodingError(error)))
+                print("In function  NetworkService.\(#function)")
+            }
+            
+        }.resume()
+    }
     
     
     //MARK: Private methods
@@ -143,3 +172,4 @@ final class NetworkService: INetworkService {
         return url
     }
 }
+

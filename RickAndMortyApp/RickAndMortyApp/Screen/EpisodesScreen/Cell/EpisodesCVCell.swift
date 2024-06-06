@@ -17,7 +17,7 @@ final class EpisodesCVCell: UICollectionViewCell {
     private var isLiked: Bool = false
     private var currentEpisode: Episode?
     
-    private let didTapOnLike: () -> Void = { }
+    private var didTapOnLike: (_ sender: UIButton) -> Void = {sender in }
     
     //MARK: UI
     lazy var episodeImageView: UIImageView = {
@@ -27,7 +27,6 @@ final class EpisodesCVCell: UICollectionViewCell {
         return imageView
     }()
     
-   
     private lazy var nameLabel: UILabel = {
         let l = UILabel()
         l.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -98,17 +97,18 @@ final class EpisodesCVCell: UICollectionViewCell {
     }
     
     //MARK: Setup methods
-    func setupCell(with episode: Episode, and character: CharacterResponse?, _ networkService: INetworkService?, isLiked: Bool, tag: Int, selector: Selector) {
+    func setupCell(with episode: Episode, and character: CharacterResponse?, _ networkService: INetworkService?, isLiked: Bool, tag: Int, buttonAction: @escaping (_ sender: UIButton) -> Void) {
         
         currentEpisode = episode
-        
+
         networkService?.getImage(with: character?.id ?? 0, for: episodeImageView)
         DispatchQueue.main.async {
+            self.isLiked = isLiked
             self.nameLabel.text = character?.name
             self.descriptionLabel.text = "\(episode.name) | \(episode.episode)"
-            self.likeButton.setImage(isLiked ? .tappedLike : .like, for: .normal)
+            self.likeButton.setImage(self.isLiked ? .tappedLike : .like, for: .normal)
             self.likeButton.tag = tag
-            self.likeButton.addTarget(self, action: selector, for: .touchUpInside)
+            self.didTapOnLike = buttonAction
         }
     }
     
@@ -136,8 +136,29 @@ final class EpisodesCVCell: UICollectionViewCell {
         } else {
             UserDefaultsService().delete(with: currentEpisode?.id ?? 33)
         }
-        
-        
+        improveUX()
+        didTapOnLike(likeButton)
+    }
+    
+    //MARK: Private methods
+    private func improveUX() {
+        let mediumGenerator = UIImpactFeedbackGenerator(style: .light)
+          mediumGenerator.prepare()
+          mediumGenerator.impactOccurred()
+          
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+              let lightGenerator = UIImpactFeedbackGenerator(style: .light)
+              lightGenerator.prepare()
+              lightGenerator.impactOccurred()
+          }
+
+        UIView.animate(withDuration: 0.1, animations: {
+            self.likeButton.transform = CGAffineTransform(scaleX: 0.55, y: 0.55)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.likeButton.transform = CGAffineTransform.identity
+            }
+        }
     }
     
 }

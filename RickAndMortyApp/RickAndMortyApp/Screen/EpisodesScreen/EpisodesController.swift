@@ -11,42 +11,19 @@ import UIKit
 final class EpisodesController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIScrollViewDelegate {
     
     //MARK: UI Elements
+    private lazy var activityIndicator: UIActivityIndicatorView = makeActivityIndicator()
     private lazy var rickAndMortyImage: UIImageView = makeRickAndMortyImage()
     private lazy var searchTF: UITextField = makeSearchTF()
     private var episodesCollection: UICollectionView?
     
-    //MARK: Services
-    private var networkService: INetworkService
-    private var userdefaultsService: IUserDefaultsService
-    
     //MARK: ViewModel
     private var viewModel: EpisodesViewModel
     
-    //MARK: Propeties
-    private var episodes: [Episode] = []{
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.episodesCollection?.reloadData()
-            }
-        }
-    }
-    private var characterURLs: [String] = []
-    private var shownCharacters: [CharacterResponse] = []
-    private var favEpisodesIds: [Int] = []
-    private var lastContentOffset: CGFloat = 0
-    private var isScrollingDown = true
-    
-    //MARK: Closures
-    private let didTapOnCharacter: (_ character: CharacterResponse) -> Void
     
     //MARK: Constructor
-    init(dependency: IDependency, viewModel: EpisodesViewModel, didTapOnCharacter: @escaping (_ character: CharacterResponse) -> Void ) {
-        self.networkService = dependency.networkService
-        self.userdefaultsService = dependency.userDefaultsService
+    init(viewModel: EpisodesViewModel) {
         self.viewModel = viewModel
-        self.didTapOnCharacter = didTapOnCharacter
         super.init(nibName: nil, bundle: nil)
-        favEpisodesIds = userdefaultsService.retrieve()
     }
     
     required init?(coder: NSCoder) {
@@ -56,30 +33,33 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupSubscriptions()
         setupUI()
         setupEpisodesCollection()
         setupConstraints()
-        networkService.getAllEpisodes(forPage: 1) { [weak self] result in
-            switch result {
-            case .success(let response):
-                let episodesArray: [Episode] = response.results
-                self?.getAllCharacterURLs(from: episodesArray)
-                self?.episodes = episodesArray
-            case .failure(let error):
-                print(error.errorDescription)
-            }
-        }
         
+        //get episodes
+        viewModel.getAllEpisodes()
         
     }
     
-    //MARK: Methods
-    private func getAllCharacterURLs(from episodesArray: [Episode]) {
-        for episode in episodesArray {
-            let randomCharacterURL = episode.characters.randomElement() ?? ""
-            characterURLs.append(randomCharacterURL)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.getFavEpispdesIDs()
+        episodesCollection?.reloadData()
     }
+    
+    //MARK: Private methods
+    private func setupSubscriptions() {
+        viewModel.reloadCollectionRequest.sink { [unowned self] _ in
+            episodesCollection?.reloadData()
+        }.store(in: &viewModel.subscriptions)
+        
+        viewModel.stopIndicatorRequest.sink { [unowned self] _ in
+            activityIndicator.stopAnimating()
+        }.store(in: &viewModel.subscriptions)
+    }
+    
 }
 
 //MARK: - UI
@@ -112,6 +92,14 @@ private extension EpisodesController {
             episodesCollection.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            activityIndicator.widthAnchor.constraint(equalToConstant: 100),
+            activityIndicator.heightAnchor.constraint(equalToConstant: 100),
+        ])
+        
     }
     
     func makeRickAndMortyImage() -> UIImageView {
@@ -141,6 +129,15 @@ private extension EpisodesController {
         view.addSubview(tf)
         tf.addTarget(self, action: #selector(didEnterName), for: .editingChanged)
         return tf
+    }
+    
+    func makeActivityIndicator() -> UIActivityIndicatorView {
+        let ai = UIActivityIndicatorView()
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        ai.hidesWhenStopped = true
+        ai.style = .large
+        ai.startAnimating()
+        return ai
     }
 }
 
@@ -176,7 +173,7 @@ extension EpisodesController {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        episodes.count
+        viewModel.episodes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -188,57 +185,62 @@ extension EpisodesController {
             return UICollectionViewCell()
         }
         
-        let currentEpisode = episodes[indexPath.row]
-        var currentCharacter: CharacterResponse?
+        let currentEpisode = viewModel.episodes[indexPath.row]
+        let currentCharacter = viewModel.shownCharacters[indexPath.row]
+        
+        let shouldBeLiked = viewModel.favEpisodesIds.contains(currentEpisode.id)
+        cell.setupCell(
+            with: currentEpisode,
+            and: currentCharacter,
+            viewModel.networkService,
+            isLiked: shouldBeLiked,
+            tag: indexPath.row, buttonAction: { sender in }
+        )
         
         
-        networkService.getCharacter(with: characterURLs[indexPath.row] ) { [weak self] result in
-            switch result {
-            case .success(let character):
-               // print("\(indexPath.row) : \(character.name)")
-                currentCharacter = character
-                self?.shownCharacters.append(character)
-                cell.setupCell(with: currentEpisode, and: currentCharacter, self?.networkService , isLiked: false, tag: indexPath.row, selector: #selector(self?.didEnterName) )
-            case .failure(_):
-                ()
-            }
-        }
+        
  
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: false)
-        didTapOnCharacter(shownCharacters[indexPath.row])
+        viewModel.didTapOnCharacter(viewModel.shownCharacters[indexPath.row])
     }
-}
-
-
-extension EpisodesController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-        if (lastContentOffset > scrollView.contentOffset.y) && (lastContentOffset < scrollView.contentSize.height - scrollView.frame.height) {
-            // move up
-            isScrollingDown = false
-            
-        } else if lastContentOffset < scrollView.contentOffset.y && scrollView.contentOffset.y > 0 {
-            // move down
-         
-            isScrollingDown = true
-           
-        }
-        
-        // update the new position acquired
-        lastContentOffset = scrollView.contentOffset.y
-    }
-}
-
-#Preview("") {
-    let dependency = Dependency()
-    return UINavigationController(rootViewController: EpisodesController(dependency: Dependency(), viewModel: EpisodesViewModel(), didTapOnCharacter: { character in
-        
-    } ))
     
 }
+
+
+//extension EpisodesController {
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        
+//        if (lastContentOffset > scrollView.contentOffset.y) && (lastContentOffset < scrollView.contentSize.height - scrollView.frame.height) {
+//            // move up
+//            isScrollingDown = false
+//            
+//        } else if lastContentOffset < scrollView.contentOffset.y && scrollView.contentOffset.y > 0 {
+//            // move down
+//         
+//            isScrollingDown = true
+//           
+//        }
+//        
+//        // update the new position acquired
+//        lastContentOffset = scrollView.contentOffset.y
+//    }
+//}
+
+//#Preview("") {
+//    let dependency = Dependency()
+//    let vm = EpisodesViewModel()
+////    let character = CharacterResponse(id: 1, name: "HH", status: "kkkk", species: "kk", type: "kkkk", gender: "kkkk", origin: Location(name: "ll", url: ""), location: Location(name: "ll", url: ""), image: "", episode: [], url: "", created: "")
+//    lazy var navController = UINavigationController(rootViewController: EpisodesController(dependency: dependency, viewModel: vm, didTapOnCharacter: didTapOnCharacter(character:) ))
+//    func didTapOnCharacter(character: CharacterResponse) {
+//        let vc = DetailAssembly.configure(character: character)
+//        navController.pushViewController(vc, animated: true)
+//    }
+//    return navController
+//    
+//}
 
 

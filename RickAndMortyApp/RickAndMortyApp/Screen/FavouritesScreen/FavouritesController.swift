@@ -28,48 +28,26 @@ final class FavouritesController: UIViewController {
     //MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupSubscriptions()
         setupUI()
         setupEpisodesCollection()
-        viewModel.getFavEpisodesIds()
-        viewModel.getCertainEpisodes()
         setupConstraints()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        addObservers()
+        viewModel.getFavEpisodesIds()
+        viewModel.getCertainEpisodes()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        removeObservers()
+    //MARK: Private methods
+    private func setupSubscriptions() {
+        viewModel.reloadCollectionRequest.sink { [unowned self] _ in
+            episodesCollection?.reloadData()
+        }.store(in: &viewModel.subscriptions)
     }
     
-    //MARK: Action
-    @objc
-    private func reloadEpisodesCollection(notification: NSNotification) {
-      self.episodesCollection?.reloadData()
-    }
-    
-    @objc
-    private func deleteItem(notification: NSNotification) {
-        guard let index = notification.object as? Int else {
-            print("Cannot convert to int")
-            return
-        }
-        self.episodesCollection?.deleteItems(at: [IndexPath(row: index, section: 0)])
-    }
-    
-    //MARK: Methods
-    private func addObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadEpisodesCollection(notification:)), name: NSNotification.Name(rawValue: "load"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadEpisodesCollection(notification:)), name: NSNotification.Name(rawValue: "delete"), object: nil)
-        
-    }
-    
-    private func removeObservers() {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "load"), object: nil)
-    }
 }
 
 //MARK: - UI

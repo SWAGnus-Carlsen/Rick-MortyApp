@@ -20,11 +20,15 @@ final class UserDefaultsService: IUserDefaultsService {
     }
     
     func retrieve() -> [Int] {
-        UserDefaults.standard.value(forKey: "Fav_episodes_id") as? [Int] ?? []
+        let retrievedIDs =  UserDefaults.standard.value(forKey: "Fav_episodes_id") as? [Int] ?? []
+        print(retrievedIDs)
+        return retrievedIDs
+       
     }
     
     func add(with id: Int) {
         var existingIds = retrieve()
+        guard !existingIds.contains(id) else { return }
         existingIds.append(id)
         print("Saved ids after Add: \(existingIds)")
         save(array: existingIds)
