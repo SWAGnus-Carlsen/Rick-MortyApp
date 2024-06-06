@@ -41,6 +41,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         //get episodes
         viewModel.getAllEpisodes(for: episodesCollection!)
         
+        searchTF.addTarget(self, action: #selector(didEnterName), for: .editingChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -146,7 +147,7 @@ private extension EpisodesController {
 private extension EpisodesController {
     @objc
     func didEnterName() {
-        
+        viewModel.serieIdentifier.send(searchTF.text ?? "")
     }
 }
 

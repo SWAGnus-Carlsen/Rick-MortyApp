@@ -13,6 +13,7 @@ protocol INetworkService {
     func getImage(with characterId: Int, for imageView: UIImageView)
     func getCertainEpisodes(withIDs ids: [Int] , _ completion: @escaping (Result<[Episode], NetworkError>) -> Void)
     func getOneEpisode(withID id: Int , _ completion: @escaping (Result<Episode, NetworkError>) -> Void)
+    func getFilteredEpisodes(for serie: String , _ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void)
 }
 
 final class NetworkService: INetworkService {
@@ -22,7 +23,7 @@ final class NetworkService: INetworkService {
     
     //MARK: Interface methods
     func getAllEpisodes(forPage page: Int, _ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void) {
-        guard page <= 3 else { return }
+        guard page <= 3, page >= 1 else { return }
         URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=\(page)")!)) { data,_,error in
             if let error {
                 completion(.failure(NetworkError.requestError(error)))
@@ -132,6 +133,7 @@ final class NetworkService: INetworkService {
             
         }.resume()
     }
+    
     func getOneEpisode(withID id: Int , _ completion: @escaping (Result<Episode, NetworkError>) -> Void) {
         
         guard let url = makeURLForSeveralEpisodesRequest(forIDs: [id]) else {
@@ -160,6 +162,37 @@ final class NetworkService: INetworkService {
             
         }.resume()
     }
+    
+    func getFilteredEpisodes(for serie: String , _ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void) {
+        
+        guard let url = URL(string: "https://rickandmortyapi.com/api/episode/?episode=\(serie)") else {
+            completion(.failure(NetworkError.badURL))
+            return
+        }
+        URLSession.shared.dataTask(with: URLRequest(url: url)) { data,_,error in
+            if let error {
+                completion(.failure(NetworkError.requestError(error)))
+                print("In function  NetworkService.\(#function)")
+            }
+            
+            guard let data else {
+                completion(.failure(NetworkError.emptyData))
+                print("In function  NetworkService.\(#function)")
+                return
+            }
+            do {
+                print(data.prettyPrintedJSONString)
+                let response = try JSONDecoder().decode(EpisodesResponse.self, from: data)
+                completion(.success(response))
+            } catch {
+                completion(.success(EpisodesResponse(info: Info(count: 0, pages: 0, next: nil, prev: nil), results: [])))
+                print("In function  NetworkService.\(#function)")
+            }
+            
+        }.resume()
+    }
+    
+    
     
     
     //MARK: Private methods

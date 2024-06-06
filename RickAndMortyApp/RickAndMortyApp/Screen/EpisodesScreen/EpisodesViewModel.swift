@@ -22,6 +22,7 @@ final class EpisodesViewModel  {
     var favEpisodesIds: [Int] = []
     let reloadCollectionRequest = PassthroughSubject<Void, Never>()
     let stopIndicatorRequest = PassthroughSubject<Void, Never>()
+    let serieIdentifier = PassthroughSubject<String, Never>()
     var subscriptions = Set<AnyCancellable>()
     
     //MARK: Private properties
@@ -37,19 +38,22 @@ final class EpisodesViewModel  {
         self.networkService = dependency.networkService
         self.userdefaultsService = dependency.userDefaultsService
         self.didTapOnCharacter = didTapOnCharacter
+        setupSubscriptions()
         getFavEpispdesIDs()
     }
     
     //MARK: Public methods
     public func getAllEpisodes(for collection: UICollectionView) {
-        getAndAddNewEpisodes()
+        getAndAddNewEpisodes(for: collection)
         
         collection.infiniteScrollDirection = .vertical
         collection.infiniteScrollIndicatorStyle = .large
-        
-        collection.addInfiniteScroll { collection in
-            self.getAndAddNewEpisodes()
-            collection.finishInfiniteScroll()
+    
+        collection.addInfiniteScroll { [weak self] collection in
+            self?.getAndAddNewEpisodes(for: collection)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                collection.finishInfiniteScroll()
+            }
         }
         
     }
@@ -58,9 +62,46 @@ final class EpisodesViewModel  {
         favEpisodesIds = userdefaultsService.retrieve()
     }
     
+    public func getFilteredEpisodes(for serie: String) {
+        if serie == "" {
+            currentPage = 2
+        } else {
+            currentPage = Int.max
+        }
+        networkService.getFilteredEpisodes(for: serie) {[weak self] result in
+            switch result {
+            case .success(let response):
+                let episodesArray: [Episode] = response.results
+                self?.characterURLs = []
+                self?.shownCharacters = []
+                self?.episodes = []
+                
+                
+                self?.getAllCharacterURLs(from: episodesArray)
+                self?.characterURLs.forEach {
+                    self?.getShownCharacter(from: $0)
+                }
+                self?.dispatchGroup.notify(queue: .main) {
+                    self?.episodes.append(contentsOf: episodesArray)
+                    self?.reloadCollectionRequest.send()
+                    self?.stopIndicatorRequest.send()
+                }
+                
+            case .failure(let error):
+                print(error.errorDescription)
+            }
+        }
+    }
+    
     
     //MARK: Private methods
-    private func getAndAddNewEpisodes() {
+    private func setupSubscriptions() {
+        serieIdentifier.sink { [unowned self] serie in
+            getFilteredEpisodes(for: serie)
+        }.store(in: &subscriptions)
+    }
+    
+    private func getAndAddNewEpisodes(for collection: UICollectionView) {
         networkService.getAllEpisodes(forPage: currentPage) { [weak self] result in
             switch result {
             case .success(let response):
@@ -74,6 +115,7 @@ final class EpisodesViewModel  {
                     self?.episodes.append(contentsOf: episodesArray)
                     self?.reloadCollectionRequest.send()
                     self?.stopIndicatorRequest.send()
+                    collection.finishInfiniteScroll()
                 }
                 
             case .failure(let error):
