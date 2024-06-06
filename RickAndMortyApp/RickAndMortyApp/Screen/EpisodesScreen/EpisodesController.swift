@@ -39,7 +39,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         setupConstraints()
         
         //get episodes
-        viewModel.getAllEpisodes()
+        viewModel.getAllEpisodes(for: episodesCollection!)
         
     }
     

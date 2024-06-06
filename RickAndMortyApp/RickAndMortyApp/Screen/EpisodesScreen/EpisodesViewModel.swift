@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import UIScrollView_InfiniteScroll
 
 final class EpisodesViewModel  {
     
@@ -24,7 +25,7 @@ final class EpisodesViewModel  {
     var subscriptions = Set<AnyCancellable>()
     
     //MARK: Private properties
-    
+    private var currentPage: Int = 1
     private let dispatchGroup = DispatchGroup()
     
     
@@ -40,8 +41,27 @@ final class EpisodesViewModel  {
     }
     
     //MARK: Public methods
-    public func getAllEpisodes() {
-        networkService.getAllEpisodes(forPage: 1) { [weak self] result in
+    public func getAllEpisodes(for collection: UICollectionView) {
+        getAndAddNewEpisodes()
+        
+        collection.infiniteScrollDirection = .vertical
+        collection.infiniteScrollIndicatorStyle = .large
+        
+        collection.addInfiniteScroll { collection in
+            self.getAndAddNewEpisodes()
+            collection.finishInfiniteScroll()
+        }
+        
+    }
+    
+    public func getFavEpispdesIDs() {
+        favEpisodesIds = userdefaultsService.retrieve()
+    }
+    
+    
+    //MARK: Private methods
+    private func getAndAddNewEpisodes() {
+        networkService.getAllEpisodes(forPage: currentPage) { [weak self] result in
             switch result {
             case .success(let response):
                 let episodesArray: [Episode] = response.results
@@ -50,7 +70,8 @@ final class EpisodesViewModel  {
                     self?.getShownCharacter(from: $0)
                 }
                 self?.dispatchGroup.notify(queue: .main) {
-                    self?.episodes = episodesArray
+                    self?.currentPage += 1
+                    self?.episodes.append(contentsOf: episodesArray)
                     self?.reloadCollectionRequest.send()
                     self?.stopIndicatorRequest.send()
                 }
@@ -61,11 +82,6 @@ final class EpisodesViewModel  {
         }
     }
     
-    public func getFavEpispdesIDs() {
-        favEpisodesIds = userdefaultsService.retrieve()
-    }
-    
-    //MARK: Private methods
     private func getAllCharacterURLs(from episodesArray: [Episode]) {
         for episode in episodesArray {
             let randomCharacterURL = episode.characters.randomElement() ?? ""

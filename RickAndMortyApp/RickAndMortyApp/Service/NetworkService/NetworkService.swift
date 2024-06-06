@@ -22,6 +22,7 @@ final class NetworkService: INetworkService {
     
     //MARK: Interface methods
     func getAllEpisodes(forPage page: Int, _ completion: @escaping (Result<EpisodesResponse, NetworkError>) -> Void) {
+        guard page <= 3 else { return }
         URLSession.shared.dataTask(with: URLRequest(url: URL(string: "https://rickandmortyapi.com/api/episode?page=\(page)")!)) { data,_,error in
             if let error {
                 completion(.failure(NetworkError.requestError(error)))
