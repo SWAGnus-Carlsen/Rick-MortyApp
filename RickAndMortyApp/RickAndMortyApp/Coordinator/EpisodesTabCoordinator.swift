@@ -28,7 +28,7 @@ final class EpisodesTabCoordinator: Coordinator {
     
     //MARK: Closures to pass
     private func didTapOnCharacter(character: CharacterResponse) {
-        let vc = DetailAssembly.configure(character: character)
+        let vc = DetailAssembly.configure(character: character, dependency: dependency)
         rootViewController.show(vc, sender: self)
     }
     

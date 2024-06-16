@@ -11,22 +11,28 @@ import UIScrollView_InfiniteScroll
 
 final class EpisodesViewModel  {
     
+    typealias DataSource = UICollectionViewDiffableDataSource<EpisodesSection, Episode>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<EpisodesSection, Episode>
+    
     //MARK: Services
     var networkService: INetworkService
     private var userdefaultsService: IUserDefaultsService
+    
+    //MARK: DataSource
+    var dataSource: DataSource?
     
     //MARK: Public propeties
     var episodes: [Episode] = []
     var characterURLs: [String] = []
     var shownCharacters: [CharacterResponse] = []
     var favEpisodesIds: [Int] = []
-    let reloadCollectionRequest = PassthroughSubject<Void, Never>()
+    let updateSnapshotRequest = PassthroughSubject<Void, Never>()
     let stopIndicatorRequest = PassthroughSubject<Void, Never>()
     let serieIdentifier = PassthroughSubject<String, Never>()
     var subscriptions = Set<AnyCancellable>()
     
     //MARK: Private properties
-    private var currentPage: Int = 1
+    private var nextPageToLoad: Int = 1
     private let dispatchGroup = DispatchGroup()
     
     
@@ -62,28 +68,27 @@ final class EpisodesViewModel  {
         favEpisodesIds = userdefaultsService.retrieve()
     }
     
-    public func getFilteredEpisodes(for serie: String) {
+    private func getFilteredEpisodes(for serie: String) {
         if serie == "" {
-            currentPage = 2
+            nextPageToLoad = 2
         } else {
-            currentPage = Int.max
+            nextPageToLoad = Int.max
         }
-        networkService.getFilteredEpisodes(for: serie) {[weak self] result in
+        networkService.getFilteredEpisodes(for: serie) { [weak self] result in
             switch result {
             case .success(let response):
                 let episodesArray: [Episode] = response.results
                 self?.characterURLs = []
                 self?.shownCharacters = []
                 self?.episodes = []
-                
-                
+
                 self?.getAllCharacterURLs(from: episodesArray)
                 self?.characterURLs.forEach {
                     self?.getShownCharacter(from: $0)
                 }
                 self?.dispatchGroup.notify(queue: .main) {
                     self?.episodes.append(contentsOf: episodesArray)
-                    self?.reloadCollectionRequest.send()
+                    self?.updateSnapshotRequest.send()
                     self?.stopIndicatorRequest.send()
                 }
                 
@@ -102,7 +107,7 @@ final class EpisodesViewModel  {
     }
     
     private func getAndAddNewEpisodes(for collection: UICollectionView) {
-        networkService.getAllEpisodes(forPage: currentPage) { [weak self] result in
+        networkService.getAllEpisodes(forPage: nextPageToLoad) { [weak self] result in
             switch result {
             case .success(let response):
                 let episodesArray: [Episode] = response.results
@@ -111,9 +116,9 @@ final class EpisodesViewModel  {
                     self?.getShownCharacter(from: $0)
                 }
                 self?.dispatchGroup.notify(queue: .main) {
-                    self?.currentPage += 1
+                    self?.nextPageToLoad += 1
                     self?.episodes.append(contentsOf: episodesArray)
-                    self?.reloadCollectionRequest.send()
+                    self?.updateSnapshotRequest.send()
                     self?.stopIndicatorRequest.send()
                     collection.finishInfiniteScroll()
                 }
@@ -136,7 +141,6 @@ final class EpisodesViewModel  {
         networkService.getCharacter(with: urlString ) { [weak self] result in
             switch result {
             case .success(let character):
-                print("Appended : \(character.name)")
                 self?.shownCharacters.append(character)
                 self?.dispatchGroup.leave()
             case .failure(_):

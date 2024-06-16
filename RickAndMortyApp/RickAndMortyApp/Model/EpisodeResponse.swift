@@ -22,10 +22,16 @@ struct Info: Decodable {
 }
 
 // MARK: - Result
-struct Episode: Decodable {
+struct Episode: Decodable, Hashable {
     let id: Int
     let name: String
     let episode: String
     let characters: [String]
     let url: String
+    
+    let uuid = UUID()
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
+    }
 }

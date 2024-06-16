@@ -8,6 +8,7 @@
 import UIKit
 
 final class ChracterInfoTableCell: UITableViewCell {
+    
     //MARK: ID
     static let identifier = String(describing: ChracterInfoTableCell.self)
     

@@ -32,19 +32,20 @@ final class FavouritesController: UIViewController {
         setupUI()
         setupEpisodesCollection()
         setupConstraints()
+        viewModel.setupDataSource(collection: episodesCollection!)
+        viewModel.updateSnapshot()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.getFavEpisodesIds()
-        viewModel.getCertainEpisodes()
+        viewModel.getFavouriteEpisodes()
     }
     
     //MARK: Private methods
     private func setupSubscriptions() {
-        viewModel.reloadCollectionRequest.sink { [unowned self] _ in
-            episodesCollection?.reloadData()
+        viewModel.updateSnapshotRequest.sink { [unowned self] _ in
+            viewModel.updateSnapshot()
         }.store(in: &viewModel.subscriptions)
     }
     
@@ -88,7 +89,7 @@ extension FavouritesController {
         episodesCollection.register(EpisodesCVCell.self,
                                 forCellWithReuseIdentifier: EpisodesCVCell.identifier)
         episodesCollection.delegate = viewModel
-        episodesCollection.dataSource = viewModel
+        episodesCollection.dataSource = viewModel.dataSource
         episodesCollection.translatesAutoresizingMaskIntoConstraints = false
     }
     

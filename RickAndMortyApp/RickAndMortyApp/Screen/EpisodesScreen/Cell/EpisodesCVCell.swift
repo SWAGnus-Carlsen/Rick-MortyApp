@@ -132,9 +132,9 @@ final class EpisodesCVCell: UICollectionViewCell {
         isLiked.toggle()
         likeButton.setImage(isLiked ? .tappedLike : .like, for: .normal)
         if isLiked {
-            UserDefaultsService().add(with: currentEpisode?.id ?? 33)
+            UserDefaultsService().add(with: currentEpisode?.id ?? -33)
         } else {
-            UserDefaultsService().delete(with: currentEpisode?.id ?? 33)
+            UserDefaultsService().delete(with: currentEpisode?.id ?? -33)
         }
         improveUX()
         didTapOnLike(likeButton)

@@ -111,6 +111,7 @@ final class NetworkService: INetworkService {
             completion(.failure(NetworkError.badURL))
             return
         }
+        
         URLSession.shared.dataTask(with: URLRequest(url: url)) { data,_,error in
             if let error {
                 completion(.failure(NetworkError.requestError(error)))

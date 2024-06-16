@@ -16,16 +16,15 @@ final class DetailController: UIViewController, UITableViewDelegate, UITableView
     private lazy var infoLabel: UILabel = makeInfoLabel()
     private var characterInfoTable: UITableView = UITableView()
     
-    //MARK: Properties
-    private var character: CharacterResponse
+    //MARK: View Model
+    private var viewModel: DetailViewModel
     
     //MARK: Constructor
-    init(character: CharacterResponse) {
-        self.character = character
+    init(viewModel: DetailViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        #warning("Network service should be injected here")
-        NetworkService().getImage(with: character.id, for: characterImageView)
-        nameLabel.text = character.name
+        viewModel.setImage(for: characterImageView)
+        nameLabel.text = self.viewModel.character.name
     }
     
     required init?(coder: NSCoder) {
@@ -165,7 +164,7 @@ extension DetailController {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ChracterInfoTableCell.identifier, for: indexPath) as? ChracterInfoTableCell else  {
             return UITableViewCell()
         }
-        cell.configure(for: indexPath.row, character)
+        cell.configure(for: indexPath.row, viewModel.character)
         
         return cell
     }
@@ -200,5 +199,9 @@ extension DetailController {
 }
 
 #Preview(String(describing: DetailController.self)) {
-    DetailController(character: CharacterResponse(id: 1, name: "Haaland", status: "Alive", species: "Alien", type: "kk", gender: "Male", origin: Location(name: "Yorkshir", url: ""), location: Location(name: "Mancity", url: ""), image: "", episode: [], url: "", created: ""))
+    let character = CharacterResponse(id: 1, name: "Haaland", status: "Alive", species: "Alien", type: "kk", gender: "Male", origin: Location(name: "Yorkshir", url: ""), location: Location(name: "Mancity", url: ""), image: "", episode: [], url: "", created: "")
+    let vm = DetailViewModel(character: character, dependency: Dependency())
+    
+    let vc = DetailController(viewModel: vm)
+    return vc
 }

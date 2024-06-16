@@ -8,12 +8,22 @@
 import UIKit
 import Combine
 
-final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
+
+final class FavouritesViewModel: NSObject, UICollectionViewDelegate {
+    
+    enum Section {
+        case main
+    }
+    
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, Episode>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Episode>
+    
+    //MARK: Data Source
+    var dataSource: DataSource?
     
     //MARK: Service
     private let networkService: INetworkService
     private let userDefaultsService: IUserDefaultsService
-    
     
     //MARK: Closure
     private let didTapOnCharacterDetail: (_ character: CharacterResponse) -> Void
@@ -30,7 +40,7 @@ final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollect
     private var shouldRequest = true
     
     //MARK: Public properties
-    let reloadCollectionRequest = PassthroughSubject<Void, Never>()
+    let updateSnapshotRequest = PassthroughSubject<Void, Never>()
     var subscriptions = Set<AnyCancellable>()
     
     //MARK: Constructor
@@ -38,66 +48,30 @@ final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollect
         self.networkService = dependency.networkService
         self.userDefaultsService = dependency.userDefaultsService
         self.didTapOnCharacterDetail = didTapOnCharacterDetail
+        super.init()
+//        getFavEpisodesIds()
+//        getCertainEpisodes()
     }
     
     //MARK: Public methods
-    public func getCertainEpisodes() {
-//        guard shouldRequest else { return }
+    public func getFavouriteEpisodes() {
+        getFavEpisodesIds()
+        //guard shouldRequest else { return }
         shownCharacters = []
         characterURLs = []
         if favEpisodesIDs.count >= 2 {
-            networkService.getCertainEpisodes(withIDs: favEpisodesIDs) { [weak self] result in
-                switch result {
-                case .success(let episodesArray):
-                    
-                    self?.getAllCharacterURLs(from: episodesArray)
-                    self?.characterURLs.forEach {
-                        self?.getShownCharacter(from: $0)
-                    }
-                    
-                    self?.dispatchGroup.notify(queue: .main) {
-                        self?.episodes = episodesArray
-                        self?.reloadCollectionRequest.send()
-                    }
-                case .failure(let error):
-                    print(error.errorDescription)
-                }
-                
-            }
+           getCertainEpisodes()
         } else if favEpisodesIDs.count == 1  {
-            networkService.getOneEpisode(withID: favEpisodesIDs.first!) { [weak self] result in
-                switch result {
-                case .success(let episode):
-                    let randomCharacterURL = episode.characters.randomElement() ?? ""
-                    self?.characterURLs = [randomCharacterURL]
-                    
-                    self?.getShownCharacter(from: randomCharacterURL)
-                    
-                    self?.dispatchGroup.notify(queue: .main) {
-                        
-                        self?.episodes = [episode]
-                        self?.reloadCollectionRequest.send()
-                    }
-                case .failure(let error):
-                    print(error.errorDescription)
-                }
-            }
+           getOneEpisode()
         } else if favEpisodesIDs.count == 0 {
             episodes = []
-            reloadCollectionRequest.send()
+            updateSnapshotRequest.send()
         }
         
         
     }
     
-    public func getFavEpisodesIds() {
-        let retrievedIDs = userDefaultsService.retrieve()
-//        print("retrieved: \(retrievedIDs)")
-//        print("Old: \(favEpisodesIDs)")
-//        shouldRequest = Set(favEpisodesIDs) != Set(retrievedIDs)
-        //if shouldRequest {
-            favEpisodesIDs = retrievedIDs
-    }
+    
     
     
 
@@ -122,30 +96,87 @@ final class FavouritesViewModel: NSObject, UICollectionViewDataSource, UICollect
         }
     }
     
+    private func getFavEpisodesIds() {
+        let retrievedIDs = userDefaultsService.retrieve()
+        print("retrieved: \(retrievedIDs)")
+        print("Old: \(favEpisodesIDs)")
+        shouldRequest = Set(favEpisodesIDs) != Set(retrievedIDs)
+        if shouldRequest {
+            favEpisodesIDs = retrievedIDs
+        }
+    }
+    
+    private func getCertainEpisodes() {
+        networkService.getCertainEpisodes(withIDs: favEpisodesIDs) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let episodesArray):
+                
+                self.getAllCharacterURLs(from: episodesArray)
+                self.characterURLs.forEach {
+                    self.getShownCharacter(from: $0)
+                }
+                
+                self.dispatchGroup.notify(queue: .main) {
+                    self.episodes = episodesArray
+                    self.updateSnapshotRequest.send()
+                }
+            case .failure(let error):
+                print(error.errorDescription)
+            }
+            
+        }
+    }
+    
+    private func getOneEpisode() {
+        networkService.getOneEpisode(withID: favEpisodesIDs.first!) { [weak self] result in
+            switch result {
+            case .success(let episode):
+                let randomCharacterURL = episode.characters.randomElement() ?? ""
+                self?.characterURLs = [randomCharacterURL]
+                
+                self?.getShownCharacter(from: randomCharacterURL)
+                
+                self?.dispatchGroup.notify(queue: .main) {
+                    
+                    self?.episodes = [episode]
+                    self?.updateSnapshotRequest.send()
+                }
+            case .failure(let error):
+                print(error.errorDescription)
+            }
+        }
+    }
+    
 }
 
 //MARK: - Collection setup
 extension FavouritesViewModel {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        episodes.count
+    func setupDataSource(collection: UICollectionView) {
+        dataSource = DataSource(collectionView: collection, cellProvider: { [weak self] collectionView, indexPath, episode in
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EpisodesCVCell.identifier,
+                for: indexPath
+            ) as? EpisodesCVCell
+            else {
+                return UICollectionViewCell()
+            }
+            
+            let currentCharacter = self?.shownCharacters[indexPath.row]
+            let buttonAction = self?.likeTapped(_:) ?? { _ in  print("Error while passing like button action")}
+            
+            cell.setupCell(with: episode, and: currentCharacter, self?.networkService, isLiked: true, tag: indexPath.row, buttonAction: buttonAction)
+     
+            return cell
+        })
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: EpisodesCVCell.identifier,
-            for: indexPath
-        ) as? EpisodesCVCell
-        else {
-            return UICollectionViewCell()
-        }
-        
-        let currentEpisode = episodes[indexPath.row]
-        let currentCharacter = shownCharacters[indexPath.row]
-        
-        cell.setupCell(with: currentEpisode, and: currentCharacter, networkService, isLiked: true, tag: indexPath.row, buttonAction: likeTapped(_:))
- 
-        return cell
+    func updateSnapshot() {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(episodes)
+        dataSource?.apply(snapshot, animatingDifferences: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -154,10 +185,30 @@ extension FavouritesViewModel {
     }
     
     
-    
     //MARK: Method to pass
     func likeTapped(_ sender: UIButton) {
         episodes.remove(at: sender.tag)
-        reloadCollectionRequest.send()
+        updateSnapshotRequest.send()
     }
+    
+    //    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    //        episodes.count
+    //    }
+        
+    //    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    //        guard let cell = collectionView.dequeueReusableCell(
+    //            withReuseIdentifier: EpisodesCVCell.identifier,
+    //            for: indexPath
+    //        ) as? EpisodesCVCell
+    //        else {
+    //            return UICollectionViewCell()
+    //        }
+    //
+    //        let currentEpisode = episodes[indexPath.row]
+    //        let currentCharacter = shownCharacters[indexPath.row]
+    //
+    //        cell.setupCell(with: currentEpisode, and: currentCharacter, networkService, isLiked: true, tag: indexPath.row, buttonAction: likeTapped(_:))
+    //
+    //        return cell
+    //    }
 }

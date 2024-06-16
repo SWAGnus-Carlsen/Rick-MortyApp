@@ -7,8 +7,14 @@
 
 import UIKit
 
+enum EpisodesSection {
+    case main
+}
 
-final class EpisodesController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIScrollViewDelegate {
+final class EpisodesController: UIViewController, UICollectionViewDelegate, UIScrollViewDelegate {
+    
+    typealias DataSource = UICollectionViewDiffableDataSource<EpisodesSection, Episode>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<EpisodesSection, Episode>
     
     //MARK: UI Elements
     private lazy var activityIndicator: UIActivityIndicatorView = makeActivityIndicator()
@@ -16,9 +22,11 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
     private lazy var searchTF: UITextField = makeSearchTF()
     private var episodesCollection: UICollectionView?
     
+    //MARK: Properties
+    
+    
     //MARK: ViewModel
     private var viewModel: EpisodesViewModel
-    
     
     //MARK: Constructor
     init(viewModel: EpisodesViewModel) {
@@ -37,23 +45,26 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UICo
         setupUI()
         setupEpisodesCollection()
         setupConstraints()
+        setupCollectionDataSource()
+        updateSnapshot()
         
         //get episodes
         viewModel.getAllEpisodes(for: episodesCollection!)
         
-        searchTF.addTarget(self, action: #selector(didEnterName), for: .editingChanged)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.getFavEpispdesIDs()
+        //Snapshot doesn't change but like button can that is why i'm using reload data here
         episodesCollection?.reloadData()
     }
     
     //MARK: Private methods
     private func setupSubscriptions() {
-        viewModel.reloadCollectionRequest.sink { [unowned self] _ in
-            episodesCollection?.reloadData()
+        viewModel.updateSnapshotRequest.sink { [unowned self] _ in
+            updateSnapshot()
         }.store(in: &viewModel.subscriptions)
         
         viewModel.stopIndicatorRequest.sink { [unowned self] _ in
@@ -154,6 +165,17 @@ private extension EpisodesController {
 //MARK: - Collection setup
 extension EpisodesController {
     
+    // Some cool animations
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        cell.alpha = 0
+        cell.layer.transform = CATransform3DMakeRotation(10, 1, 1, 0)
+        UIView.animate(withDuration: 1.0, animations: { () -> Void in
+        cell.alpha = 1
+
+            cell.layer.transform = CATransform3DScale(CATransform3DIdentity, 1, 1, 1)
+        })
+    }
+    
     private func setupEpisodesCollection() {
         
         let flowLayout = UICollectionViewFlowLayout()
@@ -169,40 +191,71 @@ extension EpisodesController {
         episodesCollection.register(EpisodesCVCell.self,
                                 forCellWithReuseIdentifier: EpisodesCVCell.identifier)
         episodesCollection.delegate = self
-        episodesCollection.dataSource = self
+        episodesCollection.dataSource = viewModel.dataSource
         episodesCollection.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.episodes.count
+    func setupCollectionDataSource() {
+        viewModel.dataSource = DataSource(collectionView: episodesCollection!, cellProvider: { [weak self] collectionView, indexPath, episode in
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EpisodesCVCell.identifier,
+                for: indexPath
+            ) as? EpisodesCVCell
+            else {
+                return UICollectionViewCell()
+            }
+            
+            let currentCharacter = self?.viewModel.shownCharacters[indexPath.row]
+            let shouldBeLiked = self?.viewModel.favEpisodesIds.contains(episode.id) ?? false
+            
+            cell.setupCell(
+                with: episode,
+                and: currentCharacter,
+                self?.viewModel.networkService,
+                isLiked: shouldBeLiked ,
+                tag: indexPath.row, buttonAction: { _ in }
+            )
+            return cell
+        })
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: EpisodesCVCell.identifier,
-            for: indexPath
-        ) as? EpisodesCVCell
-        else {
-            return UICollectionViewCell()
-        }
-        
-        let currentEpisode = viewModel.episodes[indexPath.row]
-        let currentCharacter = viewModel.shownCharacters[indexPath.row]
-        
-        let shouldBeLiked = viewModel.favEpisodesIds.contains(currentEpisode.id)
-        cell.setupCell(
-            with: currentEpisode,
-            and: currentCharacter,
-            viewModel.networkService,
-            isLiked: shouldBeLiked,
-            tag: indexPath.row, buttonAction: { sender in }
-        )
-        
-        
-        
- 
-        return cell
+    func updateSnapshot() {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModel.episodes)
+        viewModel.dataSource?.apply(snapshot)
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        viewModel.episodes.count
+//    }
+//    
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        guard let cell = collectionView.dequeueReusableCell(
+//            withReuseIdentifier: EpisodesCVCell.identifier,
+//            for: indexPath
+//        ) as? EpisodesCVCell
+//        else {
+//            return UICollectionViewCell()
+//        }
+//        
+//        let currentEpisode = viewModel.episodes[indexPath.row]
+//        let currentCharacter = viewModel.shownCharacters[indexPath.row]
+//        
+//        let shouldBeLiked = viewModel.favEpisodesIds.contains(currentEpisode.id)
+//        cell.setupCell(
+//            with: currentEpisode,
+//            and: currentCharacter,
+//            viewModel.networkService,
+//            isLiked: shouldBeLiked,
+//            tag: indexPath.row, buttonAction: { sender in }
+//        )
+//        
+//        
+//        
+// 
+//        return cell
+//    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: false)

@@ -8,9 +8,9 @@
 import Foundation
 
 final class DetailAssembly {
-    static func configure(character: CharacterResponse) -> DetailController {
-        let vm = DetailViewModel()
-        let vc  = DetailController(character: character)
+    static func configure(character: CharacterResponse, dependency: IDependency) -> DetailController {
+        let vm = DetailViewModel(character: character, dependency: dependency)
+        let vc  = DetailController(viewModel: vm)
         return vc
     }
 }
