@@ -7,6 +7,7 @@
 
 import Foundation
 
+//CRUD
 protocol IUserDefaultsService {
     func save(array: [Int])
     func retrieve() -> [Int]

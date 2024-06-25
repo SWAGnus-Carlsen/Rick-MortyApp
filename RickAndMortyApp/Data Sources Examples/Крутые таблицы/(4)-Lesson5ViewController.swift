@@ -17,13 +17,13 @@ final class Lesson5ViewModel/*: ObservableObject*/ {
 	@Published var dataToView: [String] = []
 	var cancellable: Set<AnyCancellable> = []
     
-	let datas = ["Value 1", "Value 2", "Value 3", nil,"Value 5", "Value 6"]
+	let datas = ["Value 1", "Value 2", "Value 3", nil,"Value 5", "Value 6", nil, nil]
 	
 	func fetch() {
 		_ = datas.publisher
 			.flatMap { item -> AnyPublisher<String, Never> in //flatMap работает с Optional
 				if let item {
-					return Just(item) // Call 1 time
+                    return Deferred(createPublisher: { Just(item) } )  // Call 1 time
 						.eraseToAnyPublisher()
 				} else {
 					return Empty(completeImmediately: true) // Not Set Data

@@ -10,16 +10,9 @@ import Combine
 import UIScrollView_InfiniteScroll
 
 final class EpisodesViewModel  {
-    
-    typealias DataSource = UICollectionViewDiffableDataSource<EpisodesSection, Episode>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<EpisodesSection, Episode>
-    
     //MARK: Services
     var networkService: INetworkService
     private var userdefaultsService: IUserDefaultsService
-    
-    //MARK: DataSource
-    var dataSource: DataSource?
     
     //MARK: Public propeties
     var episodes: [Episode] = []
@@ -143,8 +136,7 @@ final class EpisodesViewModel  {
             case .success(let character):
                 self?.shownCharacters.append(character)
                 self?.dispatchGroup.leave()
-            case .failure(_):
-                ()
+            case .failure(_): ()
             }
         }
     }

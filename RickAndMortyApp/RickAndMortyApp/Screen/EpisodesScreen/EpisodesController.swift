@@ -7,11 +7,12 @@
 
 import UIKit
 
-enum EpisodesSection {
-    case main
-}
+
 
 final class EpisodesController: UIViewController, UICollectionViewDelegate, UIScrollViewDelegate {
+    enum EpisodesSection {
+        case main
+    }
     
     typealias DataSource = UICollectionViewDiffableDataSource<EpisodesSection, Episode>
     typealias Snapshot = NSDiffableDataSourceSnapshot<EpisodesSection, Episode>
@@ -22,7 +23,8 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UISc
     private lazy var searchTF: UITextField = makeSearchTF()
     private var episodesCollection: UICollectionView?
     
-    //MARK: Properties
+    //MARK: DataSource
+    var dataSource: DataSource?
     
     
     //MARK: ViewModel
@@ -46,7 +48,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UISc
         setupEpisodesCollection()
         setupConstraints()
         setupCollectionDataSource()
-        updateSnapshot()
+        updateData()
         
         //get episodes
         viewModel.getAllEpisodes(for: episodesCollection!)
@@ -64,7 +66,7 @@ final class EpisodesController: UIViewController, UICollectionViewDelegate, UISc
     //MARK: Private methods
     private func setupSubscriptions() {
         viewModel.updateSnapshotRequest.sink { [unowned self] _ in
-            updateSnapshot()
+            updateData()
         }.store(in: &viewModel.subscriptions)
         
         viewModel.stopIndicatorRequest.sink { [unowned self] _ in
@@ -96,7 +98,7 @@ private extension EpisodesController {
         ])
         guard let episodesCollection else { return }
         view.addSubview(episodesCollection)
-        
+        episodesCollection.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             episodesCollection.topAnchor.constraint(equalTo: searchTF.bottomAnchor, constant: 16),
             episodesCollection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
@@ -162,21 +164,12 @@ private extension EpisodesController {
     }
 }
 
-//MARK: - Collection setup
-extension EpisodesController {
+//MARK: - Collection Diffable DataSource
+private extension EpisodesController {
     
-    // Some cool animations
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        cell.alpha = 0
-        cell.layer.transform = CATransform3DMakeRotation(10, 1, 1, 0)
-        UIView.animate(withDuration: 1.0, animations: { () -> Void in
-        cell.alpha = 1
-
-            cell.layer.transform = CATransform3DScale(CATransform3DIdentity, 1, 1, 1)
-        })
-    }
     
-    private func setupEpisodesCollection() {
+    
+    func setupEpisodesCollection() {
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
@@ -191,12 +184,13 @@ extension EpisodesController {
         episodesCollection.register(EpisodesCVCell.self,
                                 forCellWithReuseIdentifier: EpisodesCVCell.identifier)
         episodesCollection.delegate = self
-        episodesCollection.dataSource = viewModel.dataSource
-        episodesCollection.translatesAutoresizingMaskIntoConstraints = false
+        episodesCollection.dataSource = dataSource
+        
     }
     
     func setupCollectionDataSource() {
-        viewModel.dataSource = DataSource(collectionView: episodesCollection!, cellProvider: { [weak self] collectionView, indexPath, episode in
+        dataSource = DataSource(collectionView: episodesCollection!, cellProvider: { [weak self] collectionView, indexPath, episode in
+            guard let self else { return UICollectionViewCell() }
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: EpisodesCVCell.identifier,
                 for: indexPath
@@ -205,13 +199,13 @@ extension EpisodesController {
                 return UICollectionViewCell()
             }
             
-            let currentCharacter = self?.viewModel.shownCharacters[indexPath.row]
-            let shouldBeLiked = self?.viewModel.favEpisodesIds.contains(episode.id) ?? false
+            let currentCharacter = viewModel.shownCharacters[indexPath.row]
+            let shouldBeLiked = viewModel.favEpisodesIds.contains(episode.id)
             
             cell.setupCell(
                 with: episode,
                 and: currentCharacter,
-                self?.viewModel.networkService,
+                viewModel.networkService,
                 isLiked: shouldBeLiked ,
                 tag: indexPath.row, buttonAction: { _ in }
             )
@@ -219,49 +213,32 @@ extension EpisodesController {
         })
     }
     
-    func updateSnapshot() {
+    func updateData() {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModel.episodes)
-        viewModel.dataSource?.apply(snapshot)
+        dataSource?.apply(snapshot)
     }
     
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        viewModel.episodes.count
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        guard let cell = collectionView.dequeueReusableCell(
-//            withReuseIdentifier: EpisodesCVCell.identifier,
-//            for: indexPath
-//        ) as? EpisodesCVCell
-//        else {
-//            return UICollectionViewCell()
-//        }
-//        
-//        let currentEpisode = viewModel.episodes[indexPath.row]
-//        let currentCharacter = viewModel.shownCharacters[indexPath.row]
-//        
-//        let shouldBeLiked = viewModel.favEpisodesIds.contains(currentEpisode.id)
-//        cell.setupCell(
-//            with: currentEpisode,
-//            and: currentCharacter,
-//            viewModel.networkService,
-//            isLiked: shouldBeLiked,
-//            tag: indexPath.row, buttonAction: { sender in }
-//        )
-//        
-//        
-//        
-// 
-//        return cell
-//    }
-    
+
+}
+
+//MARK: - Collection Delegate
+extension EpisodesController {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: false)
         viewModel.didTapOnCharacter(viewModel.shownCharacters[indexPath.row])
     }
-    
+    // Some cool animations
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        cell.alpha = 0
+        cell.layer.transform = CATransform3DMakeRotation(10, 1, 1, 0)
+        UIView.animate(withDuration: 1.0, animations: {
+        cell.alpha = 1
+
+            cell.layer.transform = CATransform3DScale(CATransform3DIdentity, 1, 1, 1)
+        })
+    }
 }
 
 
